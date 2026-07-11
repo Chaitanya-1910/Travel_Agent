@@ -1,0 +1,227 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Travel Planner — UI Design Brief</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", system-ui, sans-serif; font-size: 14px; line-height: 1.7; background: #f7f8fa; color: #1f2328; }
+  .wrapper { max-width: 760px; margin: 0 auto; padding: 40px 24px; }
+  h1 { font-size: 1.5rem; font-weight: 800; color: #1f2328; margin-bottom: 4px; }
+  .subtitle { color: #57606a; font-size: .9rem; margin-bottom: 32px; border-bottom: 1px solid #e5e7eb; padding-bottom: 16px; }
+  h2 { font-size: 1rem; font-weight: 700; color: #1f2328; margin: 28px 0 10px; padding-left: 10px; border-left: 3px solid #3b82d4; }
+  h3 { font-size: .88rem; font-weight: 700; color: #3b82d4; margin: 16px 0 6px; }
+  p { margin-bottom: 10px; color: #1f2328; }
+  ul { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; color: #1f2328; }
+  .tag { display: inline-block; background: #eff6ff; color: #1d4ed8; font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin: 2px; }
+  .tag.green { background: #ecfdf5; color: #065f46; }
+  .tag.purple { background: #f5f3ff; color: #5b21b6; }
+  .tag.orange { background: #fff7ed; color: #c2410c; }
+  .page-block { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px 20px; margin-bottom: 14px; }
+  .page-title { font-weight: 700; font-size: .9rem; color: #1f2328; margin-bottom: 6px; }
+  .page-url { font-size: .75rem; color: #57606a; font-family: monospace; background: #f7f8fa; padding: 2px 6px; border-radius: 4px; margin-bottom: 8px; display: inline-block; }
+  .color-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+  .swatch { display: flex; align-items: center; gap: 6px; font-size: .75rem; }
+  .swatch-box { width: 20px; height: 20px; border-radius: 4px; border: 1px solid #e5e7eb; flex-shrink: 0; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 540px) { .two-col { grid-template-columns: 1fr; } }
+  .section-tag { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #57606a; margin-bottom: 4px; }
+  code { background: #f3f4f6; padding: 1px 5px; border-radius: 4px; font-size: .82rem; color: #c2410c; }
+  table { width: 100%; border-collapse: collapse; font-size: .82rem; margin: 8px 0 14px; }
+  th { background: #f7f8fa; padding: 7px 10px; text-align: left; font-weight: 700; border: 1px solid #e5e7eb; }
+  td { padding: 6px 10px; border: 1px solid #e5e7eb; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafbfc; }
+  .footer { text-align: center; font-size: .72rem; color: #57606a; border-top: 1px solid #e5e7eb; margin-top: 40px; padding-top: 16px; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <h1>AI Travel Planner — Complete UI Design Brief</h1>
+  <p class="subtitle">Built with Flask + IBM Watsonx.ai (Mistral Small 24B) · Full-stack web app · 4 pages · Dark/Light mode</p>
+
+  
+  <h2>Project Overview</h2>
+  <p>A full-stack AI-powered travel planning web application. Users enter their trip preferences and 10 specialised AI agents (powered by IBM Watsonx.ai) simultaneously generate a complete travel plan — itinerary, budget, hotels, transport, weather, local guide, restaurants, and packing checklist. The app also features a real-time AI chat assistant.</p>
+  <div style="margin:10px 0">
+    <span class="tag">Flask Backend</span>
+    <span class="tag">IBM Watsonx.ai</span>
+    <span class="tag green">10 AI Agents</span>
+    <span class="tag purple">Bootstrap 5</span>
+    <span class="tag orange">PDF Export</span>
+    <span class="tag">Dark / Light Mode</span>
+    <span class="tag green">Responsive</span>
+  </div>
+
+  
+  <h2>Design System</h2>
+
+  <h3>Typography</h3>
+  <p>Font stack: <code>-apple-system, "Segoe UI", system-ui, sans-serif</code>. Base size 14–15px, line-height 1.6. Headings bold (700–800 weight). Section tags use uppercase 0.7rem tracking.</p>
+
+  <h3>Colour Palette</h3>
+  <div class="two-col">
+    <div>
+      <p style="font-weight:700;font-size:.8rem;margin-bottom:6px">Light Mode</p>
+      <div class="color-row">
+        <div class="swatch"><div class="swatch-box" style="background:#ffffff"></div> <span>Background #ffffff</span></div>
+        <div class="swatch"><div class="swatch-box" style="background:#f7f8fa"></div> <span>Surface #f7f8fa</span></div>
+        <div class="swatch"><div class="swatch-box" style="background:#e5e7eb"></div> <span>Border #e5e7eb</span></div>
+        <div class="swatch"><div class="swatch-box" style="background:#1f2328"></div> <span>Text #1f2328</span></div>
+        <div class="swatch"><div class="swatch-box" style="background:#57606a"></div> <span>Muted #57606a</span></div>
+        <div class="swatch"><div class="swatch-box" style="background:#3b82d4"></div> <span>Primary #3b82d4</span></div>
+        <div class="swatch"><div class="swatch-box" style="background:#8b5cf6"></div> <span>Purple #8b5cf6</span></div>
+        <div class="swatch"><div class="swatch-box" style="background:#10b981"></div> <span>Green #10b981</span></div>
+        <div class="swatch"><div class="swatch-box" style="background:#f59e0b"></div> <span>Amber #f59e0b</span></div>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700;font-size:.8rem;margin-bottom:6px">Dark Mode (data-theme="dark")</p>
+      <div class="color-row">
+        <div class="swatch"><div class="swatch-box" style="background:#0d1117;border-color:#444"></div> <span>BG #0d1117</span></div>
+        <div class="swatch"><div class="swatch-box" style="background:#161b22;border-color:#444"></div> <span>Surface #161b22</span></div>
+        <div class="swatch"><div class="swatch-box" style="background:#21262d;border-color:#444"></div> <span>Card #21262d</span></div>
+        <div class="swatch"><div class="swatch-box" style="background:#30363d;border-color:#444"></div> <span>Border #30363d</span></div>
+        <div class="swatch"><div class="swatch-box" style="background:#e6edf3;border-color:#444"></div> <span>Text #e6edf3</span></div>
+        <div class="swatch"><div class="swatch-box" style="background:#58a6ff;border-color:#444"></div> <span>Primary #58a6ff</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Border Radius &amp; Shadows</h3>
+  <ul>
+    <li>Cards: <code>border-radius: 16px</code> · Buttons: <code>10px</code> · Chips: <code>20px</code></li>
+    <li>Shadow sm: <code>0 1px 3px rgba(0,0,0,.06)</code> · Shadow: <code>0 4px 20px rgba(0,0,0,.10)</code></li>
+    <li>Transition: <code>all 0.2s ease</code> on hover states</li>
+  </ul>
+
+  
+  <h2>Pages (4 Total)</h2>
+
+  
+  <div class="page-block">
+    <div class="page-title">1. Dashboard / Home</div>
+    <div class="page-url">/ → index.html</div>
+    <p>The landing page and main dashboard. Sections from top to bottom:</p>
+    <ul>
+      <li><strong>Hero Section</strong> — Full-width gradient background with animated floating shapes. Left: badge ("Powered by IBM Watsonx.ai"), large H1 "Your AI Travel Companion", subtitle, two CTA buttons (Plan My Trip / Chat with AI), and 3 quick stats (10+ Agents, 190+ Destinations, ∞ Possibilities). Right: floating animated preview card showing a sample Tokyo trip with day-wise activities.</li>
+      <li><strong>AI Agents Section</strong> — 10-card grid. Each card has a coloured icon, agent name, description, and "Get Started" link. Cards use a CSS variable <code>--agent-color</code> for per-card accent colouring. Reveal-on-scroll animation.</li>
+      <li><strong>Dashboard Widgets</strong> — Two-column layout: Left = "Recent &amp; Upcoming Trips" widget (loads real trip data from API, shows country flag emoji, destination, dates, status badge — Completed/Ongoing/Upcoming/Planned, budget chip, travellers chip, AI insight callout with blue left-border). Right = "Quick Plan" mini-form (destination input, duration select, budget input, Plan with AI button).</li>
+      <li><strong>Stats Row</strong> — 4 stat cards: Trips Planned (animated counter), Favourites (animated counter), AI Agents (10), Destinations (190+). Each has a gradient icon circle.</li>
+      <li><strong>Popular Destinations</strong> — 8-card grid with gradient backgrounds, large flag emoji, destination name, estimated cost, and "Plan This Trip" button that pre-fills the planner.</li>
+      <li><strong>How It Works</strong> — 3 steps: Tell Us Your Dream → AI Does the Magic → Travel &amp; Enjoy. Step number in large muted text behind icon.</li>
+      <li><strong>CTA Banner</strong> — Dark gradient section with "Ready for Your Next Adventure?" and two buttons.</li>
+    </ul>
+  </div>
+
+  
+  <div class="page-block">
+    <div class="page-title">2. Trip Planner</div>
+    <div class="page-url">/planner → planner.html</div>
+    <p>Two-column layout (form left, results right).</p>
+    <ul>
+      <li><strong>Left — Planner Form:</strong> Destination input, From Location input, Start/End date pickers (end auto-fills from duration), Duration select, Travellers number input, Budget input with preset buttons (Budget / Moderate / Luxury), Interest tags (toggleable pill buttons: Culture, Food, Nature, Adventure, etc.), Travel Style select, Accommodation select, Dietary select. Submit button "Plan My Trip with AI".</li>
+      <li><strong>Right — Three States:</strong>
+        <ul>
+          <li><em>Empty State:</em> Illustrated icon + "Your AI-Powered Trip Plan Will Appear Here" message.</li>
+          <li><em>Loading State:</em> Animated paper-plane with trail, "Your AI Travel Team is Working" title, live elapsed timer (counts up in seconds/minutes), "Usually completes in 60–120s" hint, and 8 agent progress rows each showing clock → spinner → green checkmark as agents complete sequentially.</li>
+          <li><em>Results State:</em> Trip header with destination name, meta chips (duration, travellers, budget, style). Tab navigation (Itinerary / Budget / Hotels / Transport / Weather / Local Guide / Restaurants / Packing). Tab content rendered as formatted markdown with headings, bullets, tables. Action buttons: Save Trip (bookmark toggle) and Export PDF.</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  
+  <div class="page-block">
+    <div class="page-title">3. AI Chat Assistant</div>
+    <div class="page-url">/chat → chat.html</div>
+    <ul>
+      <li><strong>Left sidebar</strong> — "AI Travel Assistant" header with robot icon and online indicator. Suggested question chips. Conversation history list.</li>
+      <li><strong>Right chat panel</strong> — Chat messages in bubble style. User messages: right-aligned purple gradient bubbles with avatar. AI messages: left-aligned white/dark card with robot avatar and timestamp. Typing indicator (animated dots) while waiting for response.</li>
+      <li><strong>Input area</strong> — Full-width textarea with character counter (0/2000), send button with spinner state. Supports Enter to send.</li>
+      <li>Welcome message on load with bullet list of capabilities.</li>
+    </ul>
+  </div>
+
+  
+  <div class="page-block">
+    <div class="page-title">4. Saved Trips</div>
+    <div class="page-url">/trips → trips.html</div>
+    <ul>
+      <li>Header with trip count badge and filter buttons (All / Saved / Favourites).</li>
+      <li>Trip cards grid — each card shows destination, dates, duration, travellers, budget, status badge, favourite heart toggle, and action buttons (View Details, Export PDF, Delete).</li>
+      <li>Trip detail modal — opens on click, shows full AI results with same tab navigation as planner results.</li>
+      <li>Empty state with illustration when no trips exist.</li>
+    </ul>
+  </div>
+
+  
+  <h2>Shared Components (base.html)</h2>
+  <ul>
+    <li><strong>Navbar</strong> — Fixed top, transparent → frosted glass on scroll. Logo left, nav links centre (Dashboard, Planner, Chat, My Trips), theme toggle button (sun/moon icon) right. Hamburger on mobile.</li>
+    <li><strong>Toast Notifications</strong> — Bootstrap toast, bottom-right. Three types: success (green), error (red), info (blue).</li>
+    <li><strong>Footer</strong> — Dark background, logo, tagline, nav links, tech stack badges (IBM Watsonx.ai, IBM Granite, Flask, Bootstrap 5).</li>
+    <li><strong>Scroll reveal</strong> — IntersectionObserver-based fade-in-up on agent cards, destination cards, stat cards, how-it-works cards.</li>
+  </ul>
+
+  
+  <h2>Key UI Components Summary</h2>
+  <table>
+    <tr><th>Component</th><th>Style</th><th>Behaviour</th></tr>
+    <tr><td>Agent Cards</td><td>White card, 16px radius, top colour accent bar via CSS var, hover lift + shadow</td><td>Reveal on scroll, staggered delay</td></tr>
+    <tr><td>Destination Cards</td><td>Gradient background overlay, large emoji flag, dark text on gradient</td><td>Click → pre-fills planner form</td></tr>
+    <tr><td>Trip Status Badges</td><td>Pill shape, colour-coded: green=Completed, blue=Ongoing, amber=Soon, purple=Upcoming</td><td>Computed from travel dates vs today</td></tr>
+    <tr><td>Interest Tags</td><td>Outlined pills, toggle active state fills with primary colour</td><td>Multi-select, comma-joined to API</td></tr>
+    <tr><td>Progress Agents</td><td>Row with icon + name + status icon. Status: clock → spinner → green check</td><td>Ticks every 10s matching real API timing</td></tr>
+    <tr><td>AI Insight Callout</td><td>Left blue border, light bg, lightbulb icon, italic text</td><td>First sentence extracted from AI itinerary</td></tr>
+    <tr><td>Quick Plan Widget</td><td>Card with compact form fields</td><td>Redirects to /planner with URL params</td></tr>
+    <tr><td>Chat Bubbles</td><td>User: right purple gradient. AI: left white card with shadow</td><td>Auto-scroll, typing dots animation</td></tr>
+  </table>
+
+  
+  <h2>Tech Stack</h2>
+  <div class="two-col">
+    <div>
+      <h3>Backend</h3>
+      <ul>
+        <li>Python 3 + Flask 3.1</li>
+        <li>IBM Watsonx.ai SDK (<code>ibm-watsonx-ai</code>)</li>
+        <li>Model: <code>mistralai/mistral-small-3-1-24b-instruct-2503</code></li>
+        <li>10 specialised agent functions, sequential execution with rate-limit retry</li>
+        <li>PDF export via <code>fpdf2</code></li>
+        <li>In-memory trip store (dict)</li>
+        <li>REST API: <code>/api/plan-trip</code>, <code>/api/chat</code>, <code>/api/trips</code>, <code>/api/health</code></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Frontend</h3>
+      <ul>
+        <li>Jinja2 templates (base.html + 4 pages)</li>
+        <li>Bootstrap 5 (layout/utilities only)</li>
+        <li>Custom CSS (~1200 lines, CSS variables for theming)</li>
+        <li>Vanilla JS (no framework): <code>main.js</code>, <code>dashboard.js</code>, <code>planner.js</code>, <code>chat.js</code>, <code>trips.js</code></li>
+        <li>Font Awesome 6 icons</li>
+        <li>Google Fonts (Inter)</li>
+        <li>Dark/light mode via <code>data-theme</code> attribute + localStorage</li>
+      </ul>
+    </div>
+  </div>
+
+  
+  <h2>File Structure</h2>
+  <ul>
+    <li><code>app.py</code> — Flask app, all REST endpoints</li>
+    <li><code>agents/travel_agents.py</code> — All 10 AI agent functions + WatsonxClient singleton + TravelAgentOrchestrator</li>
+    <li><code>utils/</code> — PDF generator, input sanitiser, trip ID generator</li>
+    <li><code>templates/</code> — base.html, index.html, planner.html, chat.html, trips.html</li>
+    <li><code>static/css/style.css</code> — All custom styles (~1200 lines)</li>
+    <li><code>static/js/</code> — main.js, dashboard.js, planner.js, chat.js, trips.js</li>
+    <li><code>.env</code> — IBM_API_KEY, IBM_PROJECT_ID, IBM_URL, IBM_MODEL_ID, FLASK_SECRET_KEY</li>
+  </ul>
+
+  <div class="footer">Made with IBM Bob</div>
+</div>
+</body>
+</html>

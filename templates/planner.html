@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+{% block title %}Plan Your Trip{% endblock %}
+
+{% block extra_head %}
+<style>
+  .planner-page-bg {
+    background: linear-gradient(160deg,#f0f4ff 0%,#faf5ff 50%,#f0fdf4 100%);
+    min-height: 100vh;
+  }
+  [data-theme="dark"] .planner-page-bg {
+    background: var(--bg);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="planner-page-bg">
+
+  <!-- ══ Planner Hero ══════════════════════════════════════════════════════ -->
+  <section class="pp-hero">
+    <div class="pp-hero-bg"></div>
+    <div class="pp-hero-grid"></div>
+    <div class="pp-hero-blob1"></div>
+    <div class="pp-hero-blob2"></div>
+    <div class="container position-relative" style="z-index:2">
+      <div class="pp-hero-inner">
+        <div class="pp-hero-badge">
+          <span class="pp-badge-dot"></span>
+          10 AI Agents · IBM Watsonx.ai
+        </div>
+        <h1 class="pp-hero-title">Plan Your<br/><span class="pp-title-accent">Perfect Trip</span></h1>
+        <p class="pp-hero-sub">Tell us your dream — our AI builds every detail in under 2 minutes.</p>
+        <div class="pp-hero-stats">
+          <div class="pp-stat"><span class="pp-stat-num">10</span><span class="pp-stat-lbl">AI Agents</span></div>
+          <div class="pp-stat-div"></div>
+          <div class="pp-stat"><span class="pp-stat-num">8</span><span class="pp-stat-lbl">Plan Sections</span></div>
+          <div class="pp-stat-div"></div>
+          <div class="pp-stat"><span class="pp-stat-num">~2m</span><span class="pp-stat-lbl">Avg Time</span></div>
+          <div class="pp-stat-div"></div>
+          <div class="pp-stat"><span class="pp-stat-num">190+</span><span class="pp-stat-lbl">Destinations</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Planner Body ══════════════════════════════════════════════════════ -->
+  <section class="pp-body-section">
+    <div class="container">
+      <div class="row g-4 align-items-start" id="plannerLayout">
+
+        <!-- ─ Form Panel ─────────────────────────────────────────────────── -->
+        <div class="col-lg-4" id="formColumn">
+          <div class="pp-form-card">
+
+            <!-- Card header -->
+            <div class="pp-form-head">
+              <div class="pp-form-head-icon"><i class="fas fa-sliders"></i></div>
+              <div>
+                <div class="pp-form-head-title">Trip Preferences</div>
+                <div class="pp-form-head-sub">Fill in the details below</div>
+              </div>
+            </div>
+
+            <form id="tripPlannerForm" class="pp-form-body">
+
+              <!-- Destination -->
+              <div class="pp-field">
+                <label class="pp-label">
+                  <i class="fas fa-map-pin"></i>Destination <span class="pp-required">*</span>
+                </label>
+                <input type="text" class="pp-input" id="destination" placeholder="e.g. Paris, France · Tokyo · Bali" required />
+              </div>
+
+              <!-- From -->
+              <div class="pp-field">
+                <label class="pp-label"><i class="fas fa-location-dot"></i>Travelling From</label>
+                <input type="text" class="pp-input" id="fromLocation" placeholder="e.g. Mumbai, India" />
+              </div>
+
+              <!-- Dates -->
+              <div class="pp-field-row">
+                <div class="pp-field">
+                  <label class="pp-label"><i class="fas fa-calendar"></i>Start</label>
+                  <input type="date" class="pp-input" id="startDate" />
+                </div>
+                <div class="pp-field">
+                  <label class="pp-label"><i class="fas fa-calendar-check"></i>End</label>
+                  <input type="date" class="pp-input" id="endDate" />
+                </div>
+              </div>
+
+              <!-- Duration + Travelers -->
+              <div class="pp-field-row">
+                <div class="pp-field">
+                  <label class="pp-label"><i class="fas fa-clock"></i>Duration</label>
+                  <select class="pp-input" id="duration">
+                    <option value="3 days">3 days</option>
+                    <option value="5 days">5 days</option>
+                    <option value="7 days" selected>7 days</option>
+                    <option value="10 days">10 days</option>
+                    <option value="14 days">14 days</option>
+                    <option value="21 days">21 days</option>
+                  </select>
+                </div>
+                <div class="pp-field">
+                  <label class="pp-label"><i class="fas fa-users"></i>Travellers</label>
+                  <input type="number" class="pp-input" id="travelers" value="2" min="1" max="20" />
+                </div>
+              </div>
+
+              <!-- Budget -->
+              <div class="pp-field">
+                <label class="pp-label"><i class="fas fa-coins"></i>Total Budget</label>
+                <input type="text" class="pp-input" id="budget" placeholder="e.g. ₹50,000 · $2,500 · €2,000" />
+                <div class="pp-budget-pills mt-2">
+                  <button type="button" class="pp-budget-pill" data-val="under $1000">🎒 Budget</button>
+                  <button type="button" class="pp-budget-pill" data-val="$1000–$3000">🌿 Mid-Range</button>
+                  <button type="button" class="pp-budget-pill" data-val="$3000–$7000">✨ Premium</button>
+                  <button type="button" class="pp-budget-pill" data-val="luxury, no limit">👑 Luxury</button>
+                </div>
+              </div>
+
+              <!-- Travel Style -->
+              <div class="pp-field">
+                <label class="pp-label"><i class="fas fa-compass"></i>Travel Style</label>
+                <select class="pp-input" id="travelStyle">
+                  <option value="leisure">🌴 Leisure &amp; Relaxation</option>
+                  <option value="adventure">🧗 Adventure &amp; Outdoors</option>
+                  <option value="cultural">🏛️ Cultural &amp; Heritage</option>
+                  <option value="romantic">💑 Romantic</option>
+                  <option value="family">👨‍👩‍👧‍👦 Family</option>
+                  <option value="solo">🎒 Solo Explorer</option>
+                  <option value="business">💼 Business + Leisure</option>
+                  <option value="backpacker">🏕️ Budget Backpacker</option>
+                </select>
+              </div>
+
+              <!-- Interests -->
+              <div class="pp-field">
+                <label class="pp-label"><i class="fas fa-heart"></i>Interests</label>
+                <div class="pp-interest-grid">
+                  <span class="pp-interest active" data-val="culture">🏛️ Culture</span>
+                  <span class="pp-interest" data-val="food">🍜 Food</span>
+                  <span class="pp-interest" data-val="nature">🌿 Nature</span>
+                  <span class="pp-interest" data-val="adventure">🧗 Adventure</span>
+                  <span class="pp-interest" data-val="beaches">🏖️ Beaches</span>
+                  <span class="pp-interest" data-val="history">📜 History</span>
+                  <span class="pp-interest" data-val="shopping">🛍️ Shopping</span>
+                  <span class="pp-interest" data-val="nightlife">🎭 Nightlife</span>
+                  <span class="pp-interest" data-val="photography">📸 Photo</span>
+                  <span class="pp-interest" data-val="wellness">🧘 Wellness</span>
+                </div>
+                <input type="hidden" id="interestsHidden" value="culture" />
+              </div>
+
+              <!-- Accommodation -->
+              <div class="pp-field">
+                <label class="pp-label"><i class="fas fa-bed"></i>Accommodation</label>
+                <select class="pp-input" id="accommodation">
+                  <option value="hostel">🏠 Hostel / Guesthouse</option>
+                  <option value="budget hotel">🏨 Budget Hotel (1–2★)</option>
+                  <option value="mid-range hotel" selected>🏩 Mid-Range Hotel (3★)</option>
+                  <option value="boutique hotel">🏮 Boutique Hotel</option>
+                  <option value="4-star hotel">🌟 4-Star Hotel</option>
+                  <option value="luxury 5-star hotel">👑 Luxury 5-Star</option>
+                  <option value="resort">🏝️ Resort</option>
+                  <option value="vacation rental">🏡 Vacation Rental</option>
+                </select>
+              </div>
+
+              <!-- Dietary -->
+              <div class="pp-field">
+                <label class="pp-label"><i class="fas fa-leaf"></i>Dietary Requirements</label>
+                <input type="text" class="pp-input" id="dietary" placeholder="Vegetarian, Halal, Gluten-free…" />
+              </div>
+
+              <!-- Submit -->
+              <button type="submit" class="pp-submit-btn" id="planSubmitBtn">
+                <i class="fas fa-wand-magic-sparkles"></i>
+                <span>Generate AI Travel Plan</span>
+                <span class="pp-submit-shine"></span>
+              </button>
+              <p class="pp-submit-note">
+                <i class="fas fa-shield-halved me-1"></i>IBM Watsonx.ai · ~60–120s · Free to generate
+              </p>
+
+            </form>
+          </div>
+        </div>
+
+        <!-- ─ Results Column ─────────────────────────────────────────────── -->
+        <div class="col-lg-8" id="resultsColumn">
+
+          <!-- Loading state -->
+          <div id="loadingState" class="d-none">
+            <div class="pp-loading-card">
+              <div class="pp-loading-glow"></div>
+              <div class="pp-loading-orb">
+                <i class="fas fa-paper-plane"></i>
+                <span class="pp-orb-ring r1"></span>
+                <span class="pp-orb-ring r2"></span>
+              </div>
+              <h3 class="pp-loading-title">Your AI Team is Building Your Trip</h3>
+              <p class="pp-loading-sub">IBM Watsonx.ai agents are working in parallel — usually ready in under 20 seconds.</p>
+              <!-- Agent steps -->
+              <div class="pp-agent-grid" id="agentProgress">
+                <div class="progress-agent pp-agent-tile" data-agent="itinerary">
+                  <div class="pp-at-icon"><i class="fas fa-calendar-check"></i></div>
+                  <div class="pp-at-name pa-name">Itinerary</div>
+                  <div class="pp-at-status pa-status">
+                    <span class="spinner-border spinner-border-sm text-primary" style="width:12px;height:12px;border-width:2px"></span>
+                  </div>
+                </div>
+                <div class="progress-agent pp-agent-tile" data-agent="budget">
+                  <div class="pp-at-icon"><i class="fas fa-wallet"></i></div>
+                  <div class="pp-at-name pa-name">Budget</div>
+                  <div class="pp-at-status pa-status text-muted"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="progress-agent pp-agent-tile" data-agent="hotels">
+                  <div class="pp-at-icon"><i class="fas fa-hotel"></i></div>
+                  <div class="pp-at-name pa-name">Hotels</div>
+                  <div class="pp-at-status pa-status text-muted"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="progress-agent pp-agent-tile" data-agent="transport">
+                  <div class="pp-at-icon"><i class="fas fa-plane"></i></div>
+                  <div class="pp-at-name pa-name">Transport</div>
+                  <div class="pp-at-status pa-status text-muted"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="progress-agent pp-agent-tile" data-agent="weather">
+                  <div class="pp-at-icon"><i class="fas fa-cloud-sun"></i></div>
+                  <div class="pp-at-name pa-name">Weather</div>
+                  <div class="pp-at-status pa-status text-muted"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="progress-agent pp-agent-tile" data-agent="guide">
+                  <div class="pp-at-icon"><i class="fas fa-landmark"></i></div>
+                  <div class="pp-at-name pa-name">Guide</div>
+                  <div class="pp-at-status pa-status text-muted"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="progress-agent pp-agent-tile" data-agent="food">
+                  <div class="pp-at-icon"><i class="fas fa-utensils"></i></div>
+                  <div class="pp-at-name pa-name">Food</div>
+                  <div class="pp-at-status pa-status text-muted"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="progress-agent pp-agent-tile" data-agent="packing">
+                  <div class="pp-at-icon"><i class="fas fa-suitcase"></i></div>
+                  <div class="pp-at-name pa-name">Packing</div>
+                  <div class="pp-at-status pa-status text-muted"><i class="fas fa-clock"></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div id="emptyState">
+            <div class="pp-empty-state">
+              <!-- Floating destination cards -->
+              <div class="pp-dest-preview">
+                <div class="pp-dp-card" style="--g:linear-gradient(135deg,#667eea,#764ba2);--r:-8deg;--y:-20px">
+                  <span class="pp-dp-flag">🇯🇵</span>
+                  <span class="pp-dp-name">Tokyo</span>
+                </div>
+                <div class="pp-dp-card pp-dp-main" style="--g:linear-gradient(135deg,#2563EB,#7C3AED);--r:0deg;--y:0px">
+                  <i class="fas fa-robot pp-dp-robot"></i>
+                  <span class="pp-dp-ai">AI Planning</span>
+                </div>
+                <div class="pp-dp-card" style="--g:linear-gradient(135deg,#f093fb,#f5576c);--r:8deg;--y:-20px">
+                  <span class="pp-dp-flag">🇫🇷</span>
+                  <span class="pp-dp-name">Paris</span>
+                </div>
+              </div>
+              <h3 class="pp-empty-title">Where will you go next?</h3>
+              <p class="pp-empty-sub">Fill in your preferences on the left — our 10 AI agents will craft your complete trip plan in minutes.</p>
+              <div class="pp-empty-features">
+                <span class="pp-ef"><i class="fas fa-calendar-check"></i>Day-wise Itinerary</span>
+                <span class="pp-ef"><i class="fas fa-wallet"></i>Budget Breakdown</span>
+                <span class="pp-ef"><i class="fas fa-hotel"></i>Hotel Picks</span>
+                <span class="pp-ef"><i class="fas fa-plane"></i>Transport Guide</span>
+                <span class="pp-ef"><i class="fas fa-utensils"></i>Restaurant List</span>
+                <span class="pp-ef"><i class="fas fa-suitcase"></i>Packing Checklist</span>
+                <span class="pp-ef"><i class="fas fa-cloud-sun"></i>Weather Forecast</span>
+                <span class="pp-ef"><i class="fas fa-landmark"></i>Local Guide</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results -->
+          <div id="resultsState" class="d-none">
+
+            <!-- Results header -->
+            <div class="pp-results-header">
+              <div class="pp-rh-left">
+                <h2 class="pp-rh-dest" id="resultDestName"></h2>
+                <div class="pp-rh-meta" id="resultMeta"></div>
+              </div>
+              <div class="pp-rh-actions">
+                <button class="pp-rh-btn" id="saveBtn" onclick="saveCurrentTrip()">
+                  <i class="fas fa-bookmark"></i>Save
+                </button>
+                <button class="pp-rh-btn pp-rh-btn-pdf" id="exportPdfBtn" onclick="exportCurrentPdf()">
+                  <i class="fas fa-file-pdf"></i>PDF
+                </button>
+              </div>
+            </div>
+
+            <!-- Result tabs -->
+            <div class="pp-tab-bar" id="resultTabs">
+              <button class="result-tab nav-link active" data-tab="itinerary"><i class="fas fa-calendar-check"></i><span>Itinerary</span></button>
+              <button class="result-tab nav-link" data-tab="budget_plan"><i class="fas fa-wallet"></i><span>Budget</span></button>
+              <button class="result-tab nav-link" data-tab="hotels"><i class="fas fa-hotel"></i><span>Hotels</span></button>
+              <button class="result-tab nav-link" data-tab="transportation"><i class="fas fa-plane"></i><span>Transport</span></button>
+              <button class="result-tab nav-link" data-tab="weather"><i class="fas fa-cloud-sun"></i><span>Weather</span></button>
+              <button class="result-tab nav-link" data-tab="local_guide"><i class="fas fa-landmark"></i><span>Guide</span></button>
+              <button class="result-tab nav-link" data-tab="restaurants"><i class="fas fa-utensils"></i><span>Food</span></button>
+              <button class="result-tab nav-link" data-tab="packing"><i class="fas fa-suitcase"></i><span>Packing</span></button>
+            </div>
+
+            <!-- Result body -->
+            <div id="resultContent" class="pp-result-body result-body"></div>
+
+          </div>
+
+        </div><!-- /col-lg-8 -->
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/planner.js') }}"></script>
+{% endblock %}

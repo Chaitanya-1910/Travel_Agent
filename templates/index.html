@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- ══ Hero ════════════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <!-- Animated blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <!-- Grid overlay -->
+  <div class="hero-mesh"></div>
+  <div class="hero-grid"></div>
+
+  <div class="container hero-content">
+    <div class="row align-items-center g-5">
+
+      <!-- Left: text -->
+      <div class="col-lg-6">
+        <div class="hero-pill anim-down">
+          <span class="hero-pill-dot"></span>
+          Powered by IBM Watsonx.ai
+        </div>
+        <h1 class="hero-h1 anim-up d1">
+          Plan Your Dream<br/>
+          Trip with <span class="hero-gradient-word">AI</span>
+        </h1>
+        <p class="hero-sub anim-up d2">
+          10 specialised AI agents craft your complete travel plan in minutes —
+          itinerary, budget, hotels, transport, and more.
+        </p>
+        <div class="d-flex flex-wrap gap-3 anim-up d3">
+          <a href="/planner" class="btn-primary">
+            <i class="fas fa-wand-magic-sparkles"></i>Plan My Trip
+          </a>
+          <a href="/chat" class="btn-ghost">
+            <i class="fas fa-message"></i>Chat with AI
+          </a>
+        </div>
+        <div class="hero-tags anim-in d4">
+          <span class="hero-tag"><i class="fas fa-check-circle"></i>10 AI Agents</span>
+          <span class="hero-tag"><i class="fas fa-check-circle"></i>190+ Destinations</span>
+          <span class="hero-tag"><i class="fas fa-check-circle"></i>Real-time Chat</span>
+          <span class="hero-tag"><i class="fas fa-check-circle"></i>Trip History</span>
+          <span class="hero-tag"><i class="fas fa-check-circle"></i>Dark Mode</span>
+        </div>
+      </div>
+
+      <!-- Right: floating glass trip preview card -->
+      <div class="col-lg-6 hero-card-wrap d-none d-lg-flex">
+        <div class="hero-trip-card">
+          <div class="htc-header">
+            <span class="htc-label">AI-Generated Trip</span>
+            <span class="htc-live">LIVE</span>
+          </div>
+          <div class="htc-dest">
+            <span class="htc-flag">🇯🇵</span>
+            <div>
+              <div class="htc-dest-name">Tokyo, Japan</div>
+              <div class="htc-dest-sub">7 Days · ₹2,00,000 Budget</div>
+            </div>
+          </div>
+          <div class="htc-days">
+            <div class="htc-day active">
+              <span class="htc-day-num">Day 1</span>
+              <span class="htc-day-text">Shibuya · Harajuku · Shinjuku</span>
+            </div>
+            <div class="htc-day">
+              <span class="htc-day-num">Day 2</span>
+              <span class="htc-day-text">Senso-ji · Akihabara</span>
+            </div>
+            <div class="htc-day">
+              <span class="htc-day-num">Day 3</span>
+              <span class="htc-day-text">Mt. Fuji Day Trip</span>
+            </div>
+          </div>
+          <div class="htc-footer">
+            <span class="htc-badge"><i class="fas fa-check-circle" style="color:#34d399"></i> Itinerary Ready</span>
+            <span class="htc-badge"><i class="fas fa-wallet" style="color:#fbbf24"></i> Budget Optimised</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scroll cue -->
+  <div class="scroll-cue">
+    <span>Scroll</span>
+    <i class="fas fa-chevron-down"></i>
+  </div>
+</section>
+
+<!-- ══ AI Agents ══════════════════════════════════════════════════════════ -->
+<section class="py-section bg-white">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-label"><i class="fas fa-robot"></i>10 Specialised Agents</span>
+      <h2 class="section-h2">Your Personal AI Travel Team</h2>
+      <p class="section-p">Each agent is a domain expert — together they build your perfect trip.</p>
+    </div>
+    <div class="row g-3">
+      {% set agents = [
+        ("fas fa-map-pin",           "Destination Finder",    "Discover perfect destinations matching your interests, budget, and style.",         "#2563EB"),
+        ("fas fa-calendar-check",    "Itinerary Planner",     "Day-wise plans with morning, afternoon and evening activities.",                    "#7C3AED"),
+        ("fas fa-wallet",            "Budget Optimiser",      "Smart expense breakdowns that maximise every rupee you spend.",                    "#10B981"),
+        ("fas fa-plane-departure",   "Transport Advisor",     "Flights, trains, buses and cabs — best options for every route.",                  "#F59E0B"),
+        ("fas fa-hotel",             "Hotel Recommender",     "Handpicked stays from budget guesthouses to luxury resorts.",                      "#EF4444"),
+        ("fas fa-cloud-sun",         "Weather & Safety",      "Climate forecasts, travel advisories, and safety tips.",                           "#06B6D4"),
+        ("fas fa-landmark",          "Local Guide",           "Hidden gems, cultural norms, and must-see attractions.",                           "#84CC16"),
+        ("fas fa-utensils",          "Food & Dining",         "Authentic local dishes and the best restaurants by budget.",                       "#F97316"),
+        ("fas fa-suitcase-rolling",  "Packing Checklist",     "Smart checklists tailored to your destination and weather.",                       "#A855F7"),
+        ("fas fa-message-bot",       "Travel Chat Assistant", "Ask anything — your 24/7 AI travel concierge.",                                    "#14B8A6"),
+      ] %}
+      {% for icon, name, desc, color in agents %}
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+        <div class="agent-grid-card h-100" style="--agent-color:{{ color }}">
+          <div class="agc-icon"><i class="{{ icon }}"></i></div>
+          <div class="agc-name">{{ name }}</div>
+          <p class="agc-desc">{{ desc }}</p>
+          <a href="/planner" class="agc-link">Get Started <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ══ Dashboard Widgets ══════════════════════════════════════════════════ -->
+<section class="py-section bg-subtle">
+  <div class="container">
+    <div class="mb-5">
+      <span class="section-label"><i class="fas fa-chart-line"></i>Your Dashboard</span>
+      <h2 class="section-h2">Travel at a Glance</h2>
+    </div>
+    <div class="row g-4">
+
+      <!-- Recent trips widget -->
+      <div class="col-lg-8">
+        <div class="dash-card h-100">
+          <div class="dash-card-header">
+            <span class="dash-card-title"><i class="fas fa-route"></i>Recent &amp; Upcoming Trips</span>
+            <a href="/trips" class="dash-card-action">View all <i class="fas fa-arrow-right"></i></a>
+          </div>
+          <div class="dash-card-body">
+            <div id="dashboardTrips">
+              <!-- Default empty state — dashboard.js will replace this when trips exist -->
+              <div class="text-center py-4">
+                <div class="trips-empty-icon mx-auto mb-3" style="width:70px;height:70px;font-size:1.7rem">
+                  <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <h6 class="mb-1" style="font-weight:700">No trips planned yet</h6>
+                <p class="mb-3" style="font-size:.84rem;color:var(--muted)">Plan your first AI-powered trip today</p>
+                <a href="/planner" class="btn-soft" style="font-size:.8rem;padding:8px 18px">
+                  <i class="fas fa-plus"></i>Plan a Trip
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick plan widget -->
+      <div class="col-lg-4">
+        <div class="dash-card h-100">
+          <div class="dash-card-header">
+            <span class="dash-card-title"><i class="fas fa-bolt"></i>Quick Plan</span>
+          </div>
+          <div class="dash-card-body">
+            <form id="quickPlanForm" class="qp-form">
+              <div class="form-group">
+                <label class="field-label">Where to?</label>
+                <input type="text" class="field-input" id="qDestination" placeholder="Paris, Tokyo, Bali…" />
+              </div>
+              <div class="form-group" style="margin-top:12px">
+                <label class="field-label">Duration</label>
+                <select class="field-input" id="qDuration">
+                  <option value="3 days">3 days</option>
+                  <option value="5 days">5 days</option>
+                  <option value="7 days" selected>7 days</option>
+                  <option value="10 days">10 days</option>
+                  <option value="14 days">14 days</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-top:12px">
+                <label class="field-label">Budget</label>
+                <input type="text" class="field-input" id="qBudget" placeholder="e.g. ₹50,000 or $2000" />
+                <div class="budget-presets mt-2">
+                  <button type="button" class="budget-preset" data-val="under $1000">Budget</button>
+                  <button type="button" class="budget-preset" data-val="$1000–$3000">Mid-Range</button>
+                  <button type="button" class="budget-preset" data-val="$3000–$7000">Premium</button>
+                  <button type="button" class="budget-preset" data-val="luxury, no limit">Luxury</button>
+                </div>
+              </div>
+              <button type="submit" class="btn-generate mt-3">
+                <i class="fas fa-wand-magic-sparkles"></i>Plan with AI
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat widgets -->
+    <div class="row g-3 mt-2">
+      <div class="col-md-3 col-6">
+        <div class="stat-widget">
+          <div class="stat-icon-wrap" style="background:linear-gradient(135deg,#2563EB,#7C3AED)">
+            <i class="fas fa-map-marked-alt"></i>
+          </div>
+          <div>
+            <div class="stat-val" id="totalTripsCount">0</div>
+            <div class="stat-lbl">Trips Planned</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-widget">
+          <div class="stat-icon-wrap" style="background:linear-gradient(135deg,#EF4444,#F97316)">
+            <i class="fas fa-heart"></i>
+          </div>
+          <div>
+            <div class="stat-val" id="favoritesCount">0</div>
+            <div class="stat-lbl">Favourites</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-widget">
+          <div class="stat-icon-wrap" style="background:linear-gradient(135deg,#10B981,#06B6D4)">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div>
+            <div class="stat-val">10</div>
+            <div class="stat-lbl">AI Agents</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-widget">
+          <div class="stat-icon-wrap" style="background:linear-gradient(135deg,#7C3AED,#A855F7)">
+            <i class="fas fa-globe"></i>
+          </div>
+          <div>
+            <div class="stat-val">190+</div>
+            <div class="stat-lbl">Destinations</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Popular Destinations ═══════════════════════════════════════════════ -->
+<section class="py-section bg-white">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-label"><i class="fas fa-earth-asia"></i>Explore the World</span>
+      <h2 class="section-h2">Popular Destinations</h2>
+      <p class="section-p">Tap any card for an instant AI-powered trip plan</p>
+    </div>
+    <div class="row g-4">
+      {% set destinations = [
+        ("Tokyo, Japan",      "7 days · ₹2,00,000",  "🇯🇵", "Best: Mar–May",   "linear-gradient(135deg,#667eea 0%,#764ba2 100%)"),
+        ("Paris, France",     "5 days · ₹1,50,000",  "🇫🇷", "Best: Apr–Jun",   "linear-gradient(135deg,#f093fb 0%,#f5576c 100%)"),
+        ("Bali, Indonesia",   "10 days · ₹80,000",   "🇮🇩", "Best: Apr–Sep",   "linear-gradient(135deg,#4facfe 0%,#00f2fe 100%)"),
+        ("New York, USA",     "5 days · ₹1,80,000",  "🇺🇸", "Best: Sep–Nov",   "linear-gradient(135deg,#43e97b 0%,#38f9d7 100%)"),
+        ("Dubai, UAE",        "6 days · ₹1,60,000",  "🇦🇪", "Best: Nov–Mar",   "linear-gradient(135deg,#fa709a 0%,#fee140 100%)"),
+        ("Santorini, Greece", "7 days · ₹2,20,000",  "🇬🇷", "Best: May–Oct",   "linear-gradient(135deg,#a18cd1 0%,#fbc2eb 100%)"),
+        ("Maldives",          "8 days · ₹3,00,000",  "🇲🇻", "Best: Nov–Apr",   "linear-gradient(135deg,#0093e9 0%,#80d0c7 100%)"),
+        ("Rome, Italy",       "6 days · ₹1,60,000",  "🇮🇹", "Best: Apr–Jun",   "linear-gradient(135deg,#ff9a9e 0%,#fad0c4 100%)"),
+      ] %}
+      {% for dest, sub, flag, season, grad in destinations %}
+      <div class="col-xl-3 col-lg-4 col-md-6">
+        <div class="dest-photo-card">
+          <div class="dpc-img-wrap">
+            <div class="dpc-bg" style="background:{{ grad }}"></div>
+          </div>
+          <div class="dpc-overlay"></div>
+          <span class="dpc-flag">{{ flag }}</span>
+          <span class="dpc-season"><i class="fas fa-sun"></i>{{ season }}</span>
+          <div class="dpc-body">
+            <div class="dpc-name">{{ dest }}</div>
+            <div class="dpc-meta"><i class="fas fa-clock"></i>{{ sub }}</div>
+            <button class="dpc-btn" onclick="quickPlanDest('{{ dest }}')">
+              <i class="fas fa-wand-magic-sparkles"></i>Plan This Trip
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ══ How It Works ══════════════════════════════════════════════════════ -->
+<section class="py-section bg-subtle">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-label"><i class="fas fa-circle-nodes"></i>Simple as 1-2-3</span>
+      <h2 class="section-h2">How It Works</h2>
+      <p class="section-p">From preferences to a full travel plan in under 2 minutes.</p>
+    </div>
+    <div class="row g-4 justify-content-center">
+      {% for num, icon, label, title, desc in [
+        ("01", "fas fa-pencil",         "STEP ONE",   "Tell Us Your Dream",  "Enter your destination, dates, budget and interests — takes under a minute."),
+        ("02", "fas fa-microchip-ai",   "STEP TWO",   "AI Does the Magic",   "10 IBM Watsonx.ai agents work to craft your personalised, detailed plan."),
+        ("03", "fas fa-plane-departure","STEP THREE",  "Travel &amp; Enjoy",  "Export your plan as PDF, save it, and go explore completely stress-free."),
+      ] %}
+      <div class="col-lg-4 col-md-6">
+        <div class="how-card h-100">
+          <div class="how-num">{{ num }}</div>
+          <div class="how-step-icon"><i class="{{ icon }}"></i></div>
+          <div class="how-label">{{ label }}</div>
+          <h5 class="how-title">{{ title }}</h5>
+          <p class="how-desc">{{ desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ════════════════════════════════════════════════════════════════ -->
+<section class="cta-section py-section">
+  <div class="cta-blob-1"></div>
+  <div class="cta-blob-2"></div>
+  <div class="cta-content container text-center">
+    <h2 class="cta-h2 mb-3">Ready for Your Next Adventure?</h2>
+    <p class="cta-sub mb-5">Let 10 AI agents plan every detail of your dream trip</p>
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      <a href="/planner" class="btn-white">
+        <i class="fas fa-rocket"></i>Start Planning Free
+      </a>
+      <a href="/chat" class="btn-ghost">
+        <i class="fas fa-comment-dots"></i>Chat with AI
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

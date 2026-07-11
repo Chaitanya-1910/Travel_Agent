@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}AI Travel Assistant{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* Chat page layout — theme-neutral */
+  body { overflow: hidden; }
+  main { height: calc(100vh - var(--nav-h)); overflow: hidden; display: flex; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ch-layout">
+
+  <!-- ════════════════════════════════════════════════════
+       LEFT SIDEBAR
+  ═══════════════════════════════════════════════════════ -->
+  <aside class="ch-sidebar">
+
+    <!-- Agent identity -->
+    <div class="ch-agent">
+      <div class="ch-agent-orb">
+        <i class="fas fa-robot"></i>
+        <span class="ch-orb-ring"></span>
+      </div>
+      <div class="ch-agent-name">TravelAI</div>
+      <div class="ch-agent-role">AI Travel Concierge</div>
+      <div class="ch-online-pill">
+        <span class="ch-online-dot"></span>Online · IBM Watsonx
+      </div>
+    </div>
+
+    <div class="ch-sep"></div>
+
+    <!-- Specialisations -->
+    <p class="ch-group-lbl">Specialisations</p>
+    <ul class="ch-skills">
+      <li><span class="ch-skill-dot" style="--dc:#3b82f6"></span>Destination Discovery</li>
+      <li><span class="ch-skill-dot" style="--dc:#8b5cf6"></span>Day-wise Itinerary</li>
+      <li><span class="ch-skill-dot" style="--dc:#10b981"></span>Budget Optimisation</li>
+      <li><span class="ch-skill-dot" style="--dc:#f59e0b"></span>Flights &amp; Transport</li>
+      <li><span class="ch-skill-dot" style="--dc:#ef4444"></span>Hotel Recommendations</li>
+      <li><span class="ch-skill-dot" style="--dc:#06b6d4"></span>Weather &amp; Safety</li>
+      <li><span class="ch-skill-dot" style="--dc:#84cc16"></span>Local Culture Guide</li>
+      <li><span class="ch-skill-dot" style="--dc:#f97316"></span>Food &amp; Dining</li>
+    </ul>
+
+    <div class="ch-sep"></div>
+
+    <!-- Quick prompts -->
+    <p class="ch-group-lbl">Quick Prompts</p>
+    <div class="ch-qprompts">
+      <button class="ch-qp" onclick="injectPrompt('Plan a 7-day Japan trip under ₹1,50,000')">
+        <span>🇯🇵</span><span>Japan 7 Days</span>
+      </button>
+      <button class="ch-qp" onclick="injectPrompt('Best budget destinations in Southeast Asia for solo backpacking')">
+        <span>🌏</span><span>SEA Backpacking</span>
+      </button>
+      <button class="ch-qp" onclick="injectPrompt('Romantic honeymoon destinations in India under ₹80,000')">
+        <span>💑</span><span>Honeymoon India</span>
+      </button>
+      <button class="ch-qp" onclick="injectPrompt('Family trip to Bali with two kids — activities and stay')">
+        <span>🇮🇩</span><span>Bali with Kids</span>
+      </button>
+      <button class="ch-qp" onclick="injectPrompt('Best off-season destinations to avoid crowds')">
+        <span>✈️</span><span>Off-Season Gems</span>
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <div class="ch-sb-foot">
+      <i class="fas fa-microchip"></i>
+      <span>IBM Granite 3 · 8B Instruct</span>
+    </div>
+
+  </aside>
+
+  <!-- ════════════════════════════════════════════════════
+       MAIN CHAT AREA
+  ═══════════════════════════════════════════════════════ -->
+  <div class="ch-main">
+
+    <!-- Action bar (top-right only, minimal) -->
+    <div class="ch-actions-bar">
+      <button class="ch-act-btn" onclick="clearChat()" title="Clear chat">
+        <i class="fas fa-broom"></i><span>Clear</span>
+      </button>
+      <button class="ch-act-btn" onclick="downloadChat()" title="Save chat">
+        <i class="fas fa-download"></i><span>Save</span>
+      </button>
+      <a href="/planner" class="ch-act-btn ch-act-primary">
+        <i class="fas fa-wand-magic-sparkles"></i><span>Full Planner</span>
+      </a>
+    </div>
+
+    <!-- Message feed -->
+    <div class="ch-feed" id="chatMessages">
+
+      <!-- Welcome hero (removed when first message is sent) -->
+      <div class="ch-welcome" id="welcomeHero">
+        <div class="ch-welcome-glow1"></div>
+        <div class="ch-welcome-glow2"></div>
+        <div class="ch-welcome-inner">
+          <div class="ch-welcome-orb">
+            <i class="fas fa-paper-plane"></i>
+          </div>
+          <h2 class="ch-welcome-title">Where do you want to go?</h2>
+          <p class="ch-welcome-sub">Your AI travel concierge — ask me anything about destinations, visas, budgets, hotels, food or packing. Powered by IBM Watsonx.ai.</p>
+          <div class="ch-suggestion-grid" id="chatSuggestions">
+            <button class="ch-sug-card" onclick="sendSuggestion(this)">
+              <span class="ch-sug-icon">🌸</span>
+              <span class="ch-sug-text">Best time to visit Japan?</span>
+            </button>
+            <button class="ch-sug-card" onclick="sendSuggestion(this)">
+              <span class="ch-sug-icon">💰</span>
+              <span class="ch-sug-text">Budget trip to Europe tips</span>
+            </button>
+            <button class="ch-sug-card" onclick="sendSuggestion(this)">
+              <span class="ch-sug-icon">🛂</span>
+              <span class="ch-sug-text">Visa requirements for Bali</span>
+            </button>
+            <button class="ch-sug-card" onclick="sendSuggestion(this)">
+              <span class="ch-sug-icon">🏖️</span>
+              <span class="ch-sug-text">Top 5 beach destinations</span>
+            </button>
+            <button class="ch-sug-card" onclick="sendSuggestion(this)">
+              <span class="ch-sug-icon">🎒</span>
+              <span class="ch-sug-text">Solo travel safety tips</span>
+            </button>
+            <button class="ch-sug-card" onclick="sendSuggestion(this)">
+              <span class="ch-sug-icon">❄️</span>
+              <span class="ch-sug-text">Pack for Iceland in winter</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /ch-feed -->
+
+    <!-- Input zone -->
+    <div class="ch-input-zone">
+      <div class="ch-input-shell" id="inputShell">
+        <textarea
+          id="chatInput"
+          class="ch-textarea"
+          rows="1"
+          placeholder="Ask about any destination, visa, budget, hotel, food or packing…"
+          maxlength="2000"
+        ></textarea>
+        <div class="ch-input-right">
+          <span class="ch-char-count" id="charCount">0 / 2000</span>
+          <button class="ch-send-btn" id="sendBtn" onclick="sendMessage()">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+      <p class="ch-disclaimer">
+        <i class="fas fa-lock"></i>&nbsp;AI-generated — verify critical travel info with official sources &nbsp;·&nbsp; <kbd>Enter</kbd> to send &nbsp;·&nbsp; <kbd>Shift+Enter</kbd> for newline
+      </p>
+    </div>
+
+  </div><!-- /ch-main -->
+
+</div><!-- /ch-layout -->
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+<script>
+  function injectPrompt(text) {
+    const el = document.getElementById('chatInput');
+    if (!el) return;
+    el.value = text;
+    el.dispatchEvent(new Event('input'));
+    el.focus();
+  }
+  window.injectPrompt = injectPrompt;
+</script>
+{% endblock %}
