@@ -128,7 +128,7 @@ class WatsonxClient:
             api_key = os.getenv("IBM_API_KEY", "")
             project_id = os.getenv("IBM_PROJECT_ID", "")
             url = os.getenv("IBM_URL", "https://us-south.ml.cloud.ibm.com")
-            model_id = os.getenv("IBM_MODEL_ID", "ibm/granite-3-8b-instruct")
+            model_id = os.getenv("IBM_MODEL_ID", "mistralai/mistral-small-3-1-24b-instruct-2503")
 
             if not api_key or not project_id:
                 raise EnvironmentError(

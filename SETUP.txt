@@ -1,0 +1,139 @@
+==============================================================================
+  TravelAI — Setup Guide
+  AI-Powered Travel Planner using IBM Watsonx.ai
+==============================================================================
+
+PREREQUISITES
+-------------
+  - Python 3.9 or higher  (python --version to check)
+  - pip  (comes with Python)
+  - An IBM Cloud account  (free tier works)
+  - Git  (to clone the repository)
+
+
+------------------------------------------------------------------------------
+STEP 1 — Clone the Repository
+------------------------------------------------------------------------------
+
+  git clone <your-repo-url>
+  cd Travel_Agent
+
+
+------------------------------------------------------------------------------
+STEP 2 — Create a Virtual Environment
+------------------------------------------------------------------------------
+
+  Windows:
+    python -m venv venv
+    venv\Scripts\activate
+
+  Mac / Linux:
+    python -m venv venv
+    source venv/bin/activate
+
+  You should see (venv) in your terminal prompt after activation.
+
+
+------------------------------------------------------------------------------
+STEP 3 — Install Dependencies
+------------------------------------------------------------------------------
+
+  pip install -r requirements.txt
+
+
+------------------------------------------------------------------------------
+STEP 4 — Get Your IBM Watsonx.ai Credentials  (REQUIRED)
+------------------------------------------------------------------------------
+
+  You need THREE values from IBM Cloud:
+
+  A) IBM_API_KEY
+     1. Go to https://cloud.ibm.com
+     2. Click your profile (top right) -> Manage -> Access (IAM)
+     3. Click "API Keys" in the left menu -> "Create"
+     4. Give it a name, click Create, then COPY the key immediately
+        (you cannot see it again after closing the dialog)
+
+  B) IBM_PROJECT_ID
+     1. Go to https://dataplatform.cloud.ibm.com
+     2. Open your Watsonx.ai project (or create one)
+     3. Click "Manage" tab -> "General"
+     4. Copy the "Project ID" shown on that page
+
+  C) IBM_URL  — pick the region closest to you:
+     - US South : https://us-south.ml.cloud.ibm.com
+     - EU DE    : https://eu-de.ml.cloud.ibm.com
+     - EU GB    : https://eu-gb.ml.cloud.ibm.com
+     - AP North : https://jp-tok.ml.cloud.ibm.com
+
+
+------------------------------------------------------------------------------
+STEP 5 — Create Your .env File
+------------------------------------------------------------------------------
+
+  Windows:
+    copy .env.example .env
+
+  Mac / Linux:
+    cp .env.example .env
+
+  Now open the .env file in any text editor and fill in the three values:
+
+    IBM_API_KEY=<paste your API key here>
+    IBM_PROJECT_ID=<paste your project ID here>
+    IBM_URL=<paste your regional URL here>
+
+  Everything else in the file already has sensible defaults.
+
+  IMPORTANT: Never share or commit your .env file — it contains your secrets.
+             The .gitignore already excludes it from Git automatically.
+
+
+------------------------------------------------------------------------------
+STEP 6 — Run the Application
+------------------------------------------------------------------------------
+
+  python app.py
+
+  Then open your browser and go to:
+
+    http://localhost:5000
+
+
+------------------------------------------------------------------------------
+TROUBLESHOOTING
+------------------------------------------------------------------------------
+
+  "Model is not supported"
+    -> Your IBM_URL may not match the region where your Watsonx project lives.
+       Make sure the URL and your project are in the same IBM Cloud region.
+
+  "IBM_API_KEY and IBM_PROJECT_ID must be set"
+    -> The .env file was not found or the values are still blank.
+       Re-check Step 5 and make sure the .env file is in the project root.
+
+  "ModuleNotFoundError"
+    -> Your virtual environment may not be activated.
+       Run:  venv\Scripts\activate  (Windows)
+         or  source venv/bin/activate  (Mac/Linux)
+       Then re-run:  pip install -r requirements.txt
+
+  Port already in use
+    -> Change FLASK_PORT in your .env file to another port, e.g. 5001,
+       then visit http://localhost:5001
+
+
+------------------------------------------------------------------------------
+SUPPORTED AI MODELS (IBM Watsonx.ai)
+------------------------------------------------------------------------------
+
+  The app is pre-configured to use:
+    mistralai/mistral-small-3-1-24b-instruct-2503
+
+  Other supported models you can set in IBM_MODEL_ID:
+    - meta-llama/llama-3-3-70b-instruct
+    - meta-llama/llama-4-maverick-17b-128e-instruct-fp8
+    - mistralai/mistral-medium-2505
+    - meta-llama/llama-3-1-70b-gptq
+
+==============================================================================

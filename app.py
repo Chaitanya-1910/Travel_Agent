@@ -85,7 +85,7 @@ def health_check():
     return jsonify({
         "status": "ok",
         "timestamp": datetime.utcnow().isoformat(),
-        "model": os.getenv("IBM_MODEL_ID", "ibm/granite-3-8b-instruct"),
+        "model": os.getenv("IBM_MODEL_ID", "mistralai/mistral-small-3-1-24b-instruct-2503"),
         "version": "1.0.0",
     })
 
