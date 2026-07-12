@@ -154,6 +154,7 @@ class WatsonxClient:
                     GenParams.TEMPERATURE: 0.7,
                     GenParams.TOP_P: 0.9,
                     GenParams.REPETITION_PENALTY: 1.1,
+                    GenParams.STOP_SEQUENCES: ["[INST]", "</s>"],
                 },
             )
             logger.info("IBM Watsonx.ai ModelInference client initialised. Model: %s", model_id)
@@ -442,6 +443,9 @@ _TRAVEL_KEYWORDS = {
     "recommend", "suggest", "best", "top", "guide",
     "holiday", "vacation", "getaway", "backpacking", "road trip",
     "transport", "taxi", "uber", "subway", "metro", "map", "route",
+    # geography terms that are valid travel questions
+    "capital", "where is", "how far", "distance", "timezone", "currency",
+    "population", "speak", "spoken", "official language",
 }
 
 _OFF_TOPIC_REPLY = (
