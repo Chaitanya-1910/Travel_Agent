@@ -176,16 +176,11 @@ _client = WatsonxClient()
 
 
 def _build_prompt(system_context: str, user_request: str) -> str:
-    """Assemble a Llama-style prompt with system and user sections."""
+    """Assemble a Mistral-style prompt with system and user sections."""
     persona = AGENT_INSTRUCTIONS["persona"]
     style = AGENT_INSTRUCTIONS["response_style"]
-    return (
-        f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n"
-        f"{persona}\n\n{style}\n\n{system_context}<|eot_id|>"
-        f"<|start_header_id|>user<|end_header_id|>\n"
-        f"{user_request}<|eot_id|>"
-        f"<|start_header_id|>assistant<|end_header_id|>\n"
-    )
+    system_block = f"{persona}\n\n{style}\n\n{system_context}"
+    return f"[INST] {system_block}\n\n{user_request} [/INST]"
 
 
 # ── Individual Agent Functions ────────────────────────────────────────────────
@@ -424,25 +419,21 @@ def travel_chat_agent(message: str, conversation_history: list) -> str:
     """Agent 10 — Conversational travel assistant for Q&A."""
     chat_instructions = AGENT_INSTRUCTIONS["chat_rules"]
     persona = AGENT_INSTRUCTIONS["persona"]
+    system_block = f"{persona}\n\n{chat_instructions}"
 
     # Build conversation context from history (last 6 exchanges)
-    history_ctx = ""
+    # Mistral format: [INST] user [/INST] assistant </s> [INST] user [/INST]
     recent_history = conversation_history[-6:] if len(conversation_history) > 6 else conversation_history
+    history_ctx = ""
     for entry in recent_history:
         role = entry.get("role", "user")
         content = entry.get("content", "")
         if role == "user":
-            history_ctx += f"<|start_header_id|>user<|end_header_id|>\n{content}<|eot_id|>"
+            history_ctx += f"[INST] {content} [/INST]"
         else:
-            history_ctx += f"<|start_header_id|>assistant<|end_header_id|>\n{content}<|eot_id|>"
+            history_ctx += f" {content} </s>"
 
-    prompt = (
-        f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n"
-        f"{persona}\n\n{chat_instructions}<|eot_id|>"
-        f"{history_ctx}"
-        f"<|start_header_id|>user<|end_header_id|>\n{message}<|eot_id|>"
-        f"<|start_header_id|>assistant<|end_header_id|>\n"
-    )
+    prompt = f"[INST] {system_block} [/INST]{history_ctx}[INST] {message} [/INST]"
     return _client.generate(prompt, max_tokens=800)
 
 
