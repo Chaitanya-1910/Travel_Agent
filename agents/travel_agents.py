@@ -424,29 +424,33 @@ def packing_checklist_agent(trip_details: dict) -> str:
     return _client.generate(_build_prompt(system_ctx, user_req))
 
 
-# Keywords that signal a travel-related message. The check is intentionally
-# broad — any match lets the message through to the model.
-_TRAVEL_KEYWORDS = {
-    "travel", "trip", "tour", "visit", "destination", "country", "city", "town",
-    "flight", "fly", "airline", "airport", "train", "bus", "ferry", "cruise",
-    "hotel", "hostel", "resort", "airbnb", "accommodation", "stay", "book",
-    "itinerary", "plan", "schedule", "day", "week", "night",
-    "visa", "passport", "border", "immigration",
-    "weather", "climate", "season", "monsoon", "winter", "summer",
-    "food", "restaurant", "cuisine", "eat", "dining", "street food",
-    "beach", "mountain", "forest", "island", "lake", "river", "desert",
-    "museum", "temple", "church", "monument", "landmark", "attraction",
-    "budget", "cost", "price", "cheap", "expensive", "afford",
-    "pack", "luggage", "suitcase", "backpack",
-    "culture", "language", "local", "tradition", "festival",
-    "safety", "safe", "health", "insurance", "emergency",
-    "recommend", "suggest", "best", "top", "guide",
-    "holiday", "vacation", "getaway", "backpacking", "road trip",
-    "transport", "taxi", "uber", "subway", "metro", "map", "route",
-    # geography terms that are valid travel questions
-    "capital", "where is", "how far", "distance", "timezone", "currency",
-    "population", "speak", "spoken", "official language",
-}
+import re as _re
+
+# Patterns that are clearly NOT travel-related.
+# If any pattern matches, the message is blocked before reaching the model.
+# Everything else is passed through — the model's system prompt handles tone.
+_OFFTOPIC_PATTERNS = [
+    r"\bwho\s+is\b",                          # who is X
+    r"\bwho\s+was\b",                         # who was X
+    r"\bfather\s+of\b",                       # father of X
+    r"\bmother\s+of\b",                       # mother of X
+    r"\bwife\s+of\b",                         # wife of X
+    r"\bhusband\s+of\b",                      # husband of X
+    r"\bborn\s+in\b",                         # born in (biography)
+    r"\bage\s+of\b",                          # age of X
+    r"\bpresident\s+of\b",                    # president of X (politics)
+    r"\bprime\s+minister\s+of\b",             # prime minister of X
+    r"\bceo\s+of\b",                          # CEO of X
+    r"\bfounder\s+of\b",                      # founder of X
+    r"\binvented?\s+by\b",                    # invented by
+    r"\bwhat\s+is\s+\d",                      # what is 2+2, what is 100...
+    r"\bcalculat",                             # calculate something
+    r"\bsolve\b",                              # solve this
+    r"\bwrite\s+(a|an|me)\b",                 # write a poem / essay
+    r"\btell\s+me\s+a\s+joke\b",              # tell me a joke
+    r"\bstock\s+price\b",                     # stock price
+    r"\bcrypto\b",                             # crypto
+]
 
 _OFF_TOPIC_REPLY = (
     "I'm only able to help with travel-related questions — things like "
@@ -456,9 +460,9 @@ _OFF_TOPIC_REPLY = (
 
 
 def _is_travel_related(message: str) -> bool:
-    """Return True if the message contains at least one travel keyword."""
+    """Return False only if the message clearly matches a non-travel pattern."""
     lower = message.lower()
-    return any(kw in lower for kw in _TRAVEL_KEYWORDS)
+    return not any(_re.search(p, lower) for p in _OFFTOPIC_PATTERNS)
 
 
 def travel_chat_agent(message: str, conversation_history: list) -> str:
