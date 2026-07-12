@@ -423,8 +423,46 @@ def packing_checklist_agent(trip_details: dict) -> str:
     return _client.generate(_build_prompt(system_ctx, user_req))
 
 
+# Keywords that signal a travel-related message. The check is intentionally
+# broad — any match lets the message through to the model.
+_TRAVEL_KEYWORDS = {
+    "travel", "trip", "tour", "visit", "destination", "country", "city", "town",
+    "flight", "fly", "airline", "airport", "train", "bus", "ferry", "cruise",
+    "hotel", "hostel", "resort", "airbnb", "accommodation", "stay", "book",
+    "itinerary", "plan", "schedule", "day", "week", "night",
+    "visa", "passport", "border", "immigration",
+    "weather", "climate", "season", "monsoon", "winter", "summer",
+    "food", "restaurant", "cuisine", "eat", "dining", "street food",
+    "beach", "mountain", "forest", "island", "lake", "river", "desert",
+    "museum", "temple", "church", "monument", "landmark", "attraction",
+    "budget", "cost", "price", "cheap", "expensive", "afford",
+    "pack", "luggage", "suitcase", "backpack",
+    "culture", "language", "local", "tradition", "festival",
+    "safety", "safe", "health", "insurance", "emergency",
+    "recommend", "suggest", "best", "top", "guide",
+    "holiday", "vacation", "getaway", "backpacking", "road trip",
+    "transport", "taxi", "uber", "subway", "metro", "map", "route",
+}
+
+_OFF_TOPIC_REPLY = (
+    "I'm only able to help with travel-related questions — things like "
+    "destinations, itineraries, hotels, flights, budgets, and local tips. "
+    "Is there a place you'd like to explore or a trip I can help you plan?"
+)
+
+
+def _is_travel_related(message: str) -> bool:
+    """Return True if the message contains at least one travel keyword."""
+    lower = message.lower()
+    return any(kw in lower for kw in _TRAVEL_KEYWORDS)
+
+
 def travel_chat_agent(message: str, conversation_history: list) -> str:
     """Agent 10 — Conversational travel assistant for Q&A."""
+    # Hard gate: reject off-topic messages before they reach the model
+    if not _is_travel_related(message):
+        return _OFF_TOPIC_REPLY
+
     chat_instructions = AGENT_INSTRUCTIONS["chat_rules"]
     persona = AGENT_INSTRUCTIONS["persona"]
     system_block = f"{persona}\n\n{chat_instructions}"
