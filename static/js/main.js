@@ -108,10 +108,25 @@ function markdownToHtml(text) {
   html = html.replace(/^## (.+)$/gm, "<h4>$1</h4>");
   html = html.replace(/^# (.+)$/gm, "<h3>$1</h3>");
 
+  // Standalone bold lines (entire line is **…**) → treated as section headings
+  html = html.replace(/^\*\*([^*\n]+)\*\*:?$/gm, "<h4>$1</h4>");
+
+  // Bullet items whose entire content is bold (**…** or **…:**) → sub-headings
+  html = html.replace(/^\s*[-*•]\s+\*\*([^*\n]+?)\*\*:?\s*$/gm, "<h5>$1</h5>");
+
   // Bold & italic
   html = html.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
   html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
   html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
+
+  // Colour time-of-day and itinerary label keywords inside <strong> tags
+  html = html.replace(/<strong>(Morning)<\/strong>/gi,    '<span class="tod-morning">$1</span>');
+  html = html.replace(/<strong>(Afternoon)<\/strong>/gi,  '<span class="tod-afternoon">$1</span>');
+  html = html.replace(/<strong>(Evening)<\/strong>/gi,    '<span class="tod-evening">$1</span>');
+  html = html.replace(/<strong>(Night)<\/strong>/gi,      '<span class="tod-evening">$1</span>');
+  html = html.replace(/<strong>(Travel Tip)<\/strong>/gi, '<span class="tod-tip">$1</span>');
+  html = html.replace(/<strong>(Duration)<\/strong>/gi,   '<span class="tod-duration">$1</span>');
+  html = html.replace(/<strong>(Cost|Entry Fee)<\/strong>/gi, '<span class="tod-cost">$1</span>');
 
   // Horizontal rule
   html = html.replace(/^---+$/gm, "<hr>");

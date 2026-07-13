@@ -175,5 +175,52 @@
     el.focus();
   }
   window.injectPrompt = injectPrompt;
+
+  // Override markdownToHtml — promotes bold headings to blue <h4>/<h5>
+  window.markdownToHtml = function(text) {
+    if (!text) return "<p class='text-muted'>No information available.</p>";
+    let html = text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    // Markdown headings
+    html = html.replace(/^### (.+)$/gm, "<h5>$1</h5>");
+    html = html.replace(/^## (.+)$/gm, "<h4>$1</h4>");
+    html = html.replace(/^# (.+)$/gm,  "<h3>$1</h3>");
+    // Standalone bold line  **…** or **…:**  → section heading
+    html = html.replace(/^\*\*([^*\n]+)\*\*:?$/gm, "<h4>$1</h4>");
+    // Bullet whose entire content is bold  - **…:**  → sub-heading
+    html = html.replace(/^\s*[-*•]\s+\*\*([^*\n]+?)\*\*:?\s*$/gm, "<h5>$1</h5>");
+    // Bold / italic
+    html = html.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
+    html = html.replace(/\*\*(.+?)\*\*/g,     "<strong>$1</strong>");
+    html = html.replace(/\*(.+?)\*/g,         "<em>$1</em>");
+    // Colour time-of-day labels
+    html = html.replace(/<strong>(Morning)<\/strong>/gi,    '<span class="tod-morning">$1</span>');
+    html = html.replace(/<strong>(Afternoon)<\/strong>/gi,  '<span class="tod-afternoon">$1</span>');
+    html = html.replace(/<strong>(Evening)<\/strong>/gi,    '<span class="tod-evening">$1</span>');
+    html = html.replace(/<strong>(Night)<\/strong>/gi,      '<span class="tod-evening">$1</span>');
+    html = html.replace(/<strong>(Travel Tip)<\/strong>/gi, '<span class="tod-tip">$1</span>');
+    html = html.replace(/<strong>(Duration)<\/strong>/gi,   '<span class="tod-duration">$1</span>');
+    html = html.replace(/<strong>(Cost|Entry Fee)<\/strong>/gi, '<span class="tod-cost">$1</span>');
+    // HR
+    html = html.replace(/^---+$/gm, "<hr>");
+    // Lists
+    html = html.replace(/^\s*[-*•]\s+(.+)$/gm, "<li>$1</li>");
+    html = html.replace(/(<li>.*<\/li>\n?)+/g,  "<ul>$&</ul>");
+    html = html.replace(/^\s*\d+\.\s+(.+)$/gm,  "<li>$1</li>");
+    // Blockquote
+    html = html.replace(/^&gt;\s(.+)$/gm, "<blockquote>$1</blockquote>");
+    // Paragraphs
+    const lines = html.split("\n");
+    const out = [];
+    for (const line of lines) {
+      const t = line.trim();
+      if (!t) { out.push(""); continue; }
+      if (/^<(h[1-6]|ul|ol|li|hr|blockquote)/.test(t)) { out.push(t); continue; }
+      out.push("<p>" + t + "</p>");
+    }
+    return '<div class="ai-content">' + out.join("\n") + "</div>";
+  };
 </script>
 {% endblock %}

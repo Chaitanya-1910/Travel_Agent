@@ -111,7 +111,9 @@ AGENT_INSTRUCTIONS = {
         "you plan?' "
         "Never answer off-topic questions, even if you know the answer. "
         "For travel questions: answer conversationally, ask clarifying questions if "
-        "the request is ambiguous, and end with a helpful follow-up suggestion."
+        "the request is ambiguous, and end with a helpful follow-up suggestion. "
+        "When providing itineraries or structured plans, use ## for main headings, "
+        "### for sub-headings, and bullet points for lists."
     ),
 }
 # ══════════════════════════════════════════════════════════════════════════════
@@ -192,6 +194,42 @@ def _build_prompt(system_context: str, user_request: str) -> str:
     return f"[INST] {system_block}\n\n{user_request} [/INST]"
 
 
+def _normalize_markdown(text: str) -> str:
+    """
+    Post-process AI output to ensure it uses ## headings for section titles
+    and Day N lines, regardless of whether the model used bold, plain text,
+    or proper ##. Morning/Afternoon/Evening are left as inline bold bullets.
+    """
+    import re
+    lines = text.split("\n")
+    out = []
+    # "Day N: …" possibly wrapped in ** or with leading "- " — promote to ##
+    day_pat   = re.compile(r"^[-*•\s]*\*{0,2}(Day\s+\d+[:\s].+?)\*{0,2}:?\s*$", re.IGNORECASE)
+    # Trip title line containing "Itinerary/Plan" — promote to ##
+    title_pat = re.compile(r"^[-*•\s]*\*{0,2}(.+?(?:Itinerary|Day Plan|Trip Plan).+?)\*{0,2}:?\s*$", re.IGNORECASE)
+    # Standalone section labels (Accommodation, Budget, Hotels, etc.) — promote to ##
+    section_pat = re.compile(r"^[-*•\s]*\*{0,2}(Accommodation|Budget|Hotels?|Transportation|Weather|Packing|Food|Restaurants?|Guide)\*{0,2}:?\s*$", re.IGNORECASE)
+    # Already a ## or # heading — leave as-is
+    heading_pat = re.compile(r"^#{1,6}\s")
+
+    for line in lines:
+        stripped = line.strip()
+        if heading_pat.match(stripped):
+            out.append(line)
+        elif day_pat.match(stripped):
+            m = day_pat.match(stripped)
+            out.append(f"## {m.group(1).strip()}")
+        elif title_pat.match(stripped):
+            m = title_pat.match(stripped)
+            out.append(f"## {m.group(1).strip()}")
+        elif section_pat.match(stripped):
+            m = section_pat.match(stripped)
+            out.append(f"## {m.group(1).strip()}")
+        else:
+            out.append(line)
+    return "\n".join(out)
+
+
 # ── Individual Agent Functions ────────────────────────────────────────────────
 
 def destination_recommendation_agent(preferences: dict) -> str:
@@ -245,10 +283,23 @@ def itinerary_planning_agent(trip_details: dict) -> str:
         f"Use realistic LOCAL pricing in the local currency (e.g. INR ₹ for India, "
         f"USD $ for USA). For Indian cities, budget hotels cost ₹1500-4000/night, "
         f"mid-range ₹4000-8000/night. Do not use international luxury rates.\n"
-        "Structure: For each day provide Morning, Afternoon, Evening activities "
-        "with specific place names, estimated duration, travel tips, and entry fees."
+        "STRICT FORMAT — follow this exactly:\n\n"
+        "## {Destination} {Duration} Itinerary ({Date Range})\n\n"
+        "## Accommodation\n"
+        "- **Budget**: Hotel Name (₹X/night)\n"
+        "- **Mid-Range**: Hotel Name (₹X/night)\n\n"
+        "## Day 1: Title\n"
+        "- **Morning**: Activity. Place name. Travel tip.\n"
+        "- **Travel Tip**: tip text\n"
+        "- **Afternoon**: Activity. Place name (entry fee).\n"
+        "- **Duration**: X hours\n"
+        "- **Evening**: Activity.\n\n"
+        "## Day 2: Title\n"
+        "- **Morning**: ...\n\n"
+        "Use ONLY ## for section headings. Use bullet points with inline bold labels for all details."
     )
-    return _client.generate(_build_prompt(system_ctx, user_req), max_tokens=900)
+    raw = _client.generate(_build_prompt(system_ctx, user_req), max_tokens=900)
+    return _normalize_markdown(raw)
 
 
 def budget_planning_agent(trip_details: dict) -> str:
