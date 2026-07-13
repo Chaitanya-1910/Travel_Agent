@@ -9,6 +9,12 @@
 
 ---
 
+## 📊 Project Presentation
+
+> **[▶ Click here to view the Project Presentation (PowerPoint)](https://1drv.ms/p/c/A4838C68FB5A3A7A/IQCLoq1Tj8MvR6MwAhRswBYMARu40zpQihXHp_mEZkUADuM?e=A4rhi9)**
+
+---
+
 ## ✨ Features
 
 ### 🤖 10 Specialised AI Agents
