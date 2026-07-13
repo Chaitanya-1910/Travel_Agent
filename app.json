@@ -1,0 +1,70 @@
+{
+  "name": "AI Travel Planner",
+  "description": "An AI-powered Travel Planner Agent built with IBM Watsonx.ai and IBM Granite models. Uses 10 specialised agents to generate personalised itineraries, budget plans, hotel recommendations, transport guides, weather advisories, local guides, restaurant suggestions, and packing checklists.",
+  "keywords": [
+    "ibm-watsonx",
+    "ibm-granite",
+    "agentic-ai",
+    "travel-planner",
+    "flask",
+    "multi-agent"
+  ],
+  "website": "https://github.com",
+  "repository": "https://github.com",
+  "logo": "https://www.ibm.com/favicon.ico",
+  "env": {
+    "IBM_API_KEY": {
+      "description": "Your IBM Cloud API key. Get it from cloud.ibm.com → Manage → Access (IAM) → API Keys.",
+      "required": true
+    },
+    "IBM_PROJECT_ID": {
+      "description": "Your IBM Watsonx.ai Project ID. Get it from dataplatform.cloud.ibm.com → Your Project → Manage → General.",
+      "required": true
+    },
+    "IBM_URL": {
+      "description": "Regional Watsonx.ai / Watson Machine Learning endpoint. E.g. https://eu-de.ml.cloud.ibm.com",
+      "required": true,
+      "value": "https://us-south.ml.cloud.ibm.com"
+    },
+    "IBM_MODEL_ID": {
+      "description": "Foundation model ID to use for inference.",
+      "required": false,
+      "value": "meta-llama/llama-3-3-70b-instruct"
+    },
+    "FLASK_SECRET_KEY": {
+      "description": "Secret key for Flask session signing. Use a strong random string.",
+      "required": true,
+      "generator": "secret"
+    },
+    "FLASK_ENV": {
+      "description": "Flask environment. Use 'production' for deployment.",
+      "required": false,
+      "value": "production"
+    },
+    "FLASK_DEBUG": {
+      "description": "Enable Flask debug mode. Set to False in production.",
+      "required": false,
+      "value": "False"
+    },
+    "FLASK_PORT": {
+      "description": "Port the server listens on.",
+      "required": false,
+      "value": "5000"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "scripts": {
+    "postdeploy": "echo 'AI Travel Planner deployed successfully'"
+  },
+  "stack": "heroku-22"
+}
