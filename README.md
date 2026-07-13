@@ -83,7 +83,7 @@ IBM_URL=<your regional endpoint, e.g. https://eu-de.ml.cloud.ibm.com>
 
 Everything else already has working defaults — no changes needed.
 
-> ⚠️ **IBM_URL must match the region your Watsonx.ai project was created in.** Mismatched regions cause all API calls to fail.
+> ⚠️ **IBM_URL must match the region of your Watson Machine Learning (WML) service — not your Watsonx Studio project.** These can be in different regions. Find your WML region at: `cloud.ibm.com → Resource List → AI / Machine Learning → Watson Machine Learning`.
 
 ### 5. Run the Application
 ```bash

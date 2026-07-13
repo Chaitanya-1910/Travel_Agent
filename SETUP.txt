@@ -60,13 +60,19 @@ STEP 4 — Get Your IBM Watsonx.ai Credentials  (REQUIRED)
      3. Click "Manage" tab -> "General"
      4. Copy the "Project ID" shown on that page
 
-  C) IBM_URL  — MUST match the region where your Watsonx project was created:
-     - US South : https://us-south.ml.cloud.ibm.com
-     - EU DE    : https://eu-de.ml.cloud.ibm.com
-     - EU GB    : https://eu-gb.ml.cloud.ibm.com
-     - AP North : https://jp-tok.ml.cloud.ibm.com
+  C) IBM_URL  — MUST match the region of your Watson Machine Learning SERVICE:
+     - US South (Dallas)    : https://us-south.ml.cloud.ibm.com
+     - EU DE    (Frankfurt) : https://eu-de.ml.cloud.ibm.com
+     - EU GB    (London)    : https://eu-gb.ml.cloud.ibm.com
+     - AP North (Tokyo)     : https://jp-tok.ml.cloud.ibm.com
 
-  NOTE: IBM_URL and your project must be in the SAME region or all calls will fail.
+     To find your WML service region:
+       cloud.ibm.com -> Resource List -> AI / Machine Learning
+       -> Watson Machine Learning -> look at the Region/Location column
+
+  IMPORTANT: Your Watsonx Studio (project) region and your WML service region
+             CAN be different. IBM_URL must match the WML SERVICE, not the project.
+             Wrong region = all API calls fail with auth/routing errors.
 
 
 ------------------------------------------------------------------------------
