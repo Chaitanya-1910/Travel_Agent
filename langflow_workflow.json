@@ -1,0 +1,419 @@
+{
+  "id": "ai-travel-planner-workflow",
+  "name": "AI Travel Planner — Multi-Agent Workflow",
+  "description": "10-agent IBM Watsonx.ai powered travel planning pipeline",
+  "nodes": [
+    {
+      "id": "user-input",
+      "type": "TextInput",
+      "position": { "x": 50, "y": 300 },
+      "data": {
+        "type": "TextInput",
+        "node": {
+          "display_name": "User Trip Input",
+          "description": "Traveller preferences: destination, budget, dates, travelers, interests, travel_style, accommodation, dietary, weather",
+          "template": {
+            "input_value": {
+              "type": "str",
+              "display_name": "Trip Details",
+              "value": "destination, from_location, start_date, end_date, duration, travelers, budget, interests, travel_style, accommodation, dietary, weather"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "chat-input",
+      "type": "ChatInput",
+      "position": { "x": 50, "y": 520 },
+      "data": {
+        "type": "ChatInput",
+        "node": {
+          "display_name": "Chat Message Input",
+          "description": "User's conversational travel question with history",
+          "template": {
+            "input_value": {
+              "type": "str",
+              "display_name": "Message"
+            },
+            "session_id": {
+              "type": "str",
+              "display_name": "Session ID"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "sanitizer",
+      "type": "PythonFunctionTool",
+      "position": { "x": 320, "y": 380 },
+      "data": {
+        "type": "PythonFunctionTool",
+        "node": {
+          "display_name": "Input Sanitizer",
+          "description": "html.escape() · strip null bytes · 2000 char limit · sanitize_input()",
+          "template": {
+            "code": {
+              "type": "code",
+              "display_name": "sanitize_input",
+              "value": "import html\ndef sanitize_input(text: str) -> str:\n    if not isinstance(text, str):\n        return ''\n    text = text.replace('\\x00', '')\n    text = html.escape(text.strip())\n    return text[:2000]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "offtopic-guard",
+      "type": "PythonFunctionTool",
+      "position": { "x": 320, "y": 560 },
+      "data": {
+        "type": "PythonFunctionTool",
+        "node": {
+          "display_name": "Off-Topic Guard",
+          "description": "Regex gate — blocks non-travel queries before reaching the LLM. Patterns: who is, father of, born in, calculate, crypto, stock price, tell me a joke",
+          "template": {
+            "code": {
+              "type": "code",
+              "display_name": "_is_travel_related",
+              "value": "import re\nPATTERNS = [r'\\bwho\\s+is\\b', r'\\bfather\\s+of\\b', r'\\bborn\\s+in\\b', r'\\bcalculat', r'\\bcrypto\\b', r'\\bstock\\s+price\\b', r'\\btell\\s+me\\s+a\\s+joke\\b']\ndef is_travel_related(msg):\n    return not any(re.search(p, msg.lower()) for p in PATTERNS)"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "prompt-engine",
+      "type": "PromptTemplate",
+      "position": { "x": 590, "y": 380 },
+      "data": {
+        "type": "PromptTemplate",
+        "node": {
+          "display_name": "Prompt Engine",
+          "description": "_build_prompt() — Mistral [INST] format with AGENT_INSTRUCTIONS (persona, response_style, budget_philosophy, safety_guidelines, itinerary_style, accommodation_style, food_philosophy, personalisation, culture_guidance, chat_rules)",
+          "template": {
+            "template": {
+              "type": "prompt",
+              "display_name": "Prompt Template",
+              "value": "[INST] {persona}\n\n{response_style}\n\n{system_context}\n\n{user_request} [/INST]"
+            },
+            "persona": {
+              "type": "str",
+              "display_name": "Persona",
+              "value": "You are an expert AI Travel Planner with 20+ years of global travel consulting experience."
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "orchestrator",
+      "type": "PythonFunctionTool",
+      "position": { "x": 860, "y": 380 },
+      "data": {
+        "type": "PythonFunctionTool",
+        "node": {
+          "display_name": "Agent Orchestrator",
+          "description": "TravelAgentOrchestrator — ThreadPoolExecutor(8 workers) · stagger 0.4s · as_completed() · EnvironmentError=abort · agent fail=isolated",
+          "template": {
+            "code": {
+              "type": "code",
+              "display_name": "plan_trip",
+              "value": "from concurrent.futures import ThreadPoolExecutor, as_completed\nimport time\ndef plan_trip(trip_data, agents):\n    results = {}\n    with ThreadPoolExecutor(max_workers=8) as pool:\n        futures = {pool.submit(fn, trip_data, idx*0.4): key for idx,(key,fn) in enumerate(agents)}\n        for f in as_completed(futures):\n            key, result = f.result()\n            results[key] = result\n    return results"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "watsonx-llm",
+      "type": "WatsonxAIModel",
+      "position": { "x": 1130, "y": 300 },
+      "data": {
+        "type": "WatsonxAIModel",
+        "node": {
+          "display_name": "IBM Watsonx.ai LLM",
+          "description": "WatsonxClient Singleton · Credentials(url, api_key) · ModelInference · 5x retry · 429 backoff 2/5/8/11s · quota→EnvironmentError",
+          "template": {
+            "model_id": {
+              "type": "str",
+              "display_name": "Model ID",
+              "value": "meta-llama/llama-3-3-70b-instruct",
+              "options": [
+                "meta-llama/llama-3-3-70b-instruct",
+                "mistralai/mistral-small-3-1-24b-instruct-2503",
+                "meta-llama/llama-4-maverick-17b-128e-instruct-fp8"
+              ]
+            },
+            "api_key": {
+              "type": "str",
+              "display_name": "IBM_API_KEY",
+              "password": true
+            },
+            "project_id": {
+              "type": "str",
+              "display_name": "IBM_PROJECT_ID"
+            },
+            "url": {
+              "type": "str",
+              "display_name": "IBM_URL",
+              "value": "https://eu-de.ml.cloud.ibm.com"
+            },
+            "max_new_tokens": {
+              "type": "int",
+              "display_name": "Max New Tokens",
+              "value": 1200
+            },
+            "temperature": {
+              "type": "float",
+              "display_name": "Temperature",
+              "value": 0.7
+            },
+            "top_p": {
+              "type": "float",
+              "display_name": "Top P",
+              "value": 0.9
+            },
+            "repetition_penalty": {
+              "type": "float",
+              "display_name": "Repetition Penalty",
+              "value": 1.1
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "agent-destination",
+      "type": "Tool",
+      "position": { "x": 1130, "y": 50 },
+      "data": {
+        "type": "Tool",
+        "node": {
+          "display_name": "Agent 1 — Destination Recommender",
+          "description": "Recommends 5 top destinations · cost · highlights · best time to visit · matches traveller profile",
+          "template": {}
+        }
+      }
+    },
+    {
+      "id": "agent-itinerary",
+      "type": "Tool",
+      "position": { "x": 1130, "y": 160 },
+      "data": {
+        "type": "Tool",
+        "node": {
+          "display_name": "Agent 2 — Itinerary Planner",
+          "description": "Day-wise itinerary · Morning / Afternoon / Evening · local pricing · _normalize_markdown() post-processing",
+          "template": {}
+        }
+      }
+    },
+    {
+      "id": "agent-budget",
+      "type": "Tool",
+      "position": { "x": 1130, "y": 490 },
+      "data": {
+        "type": "Tool",
+        "node": {
+          "display_name": "Agent 3 — Budget Planner",
+          "description": "Category-wise breakdown · daily budget · money-saving tips · realism check · local currency",
+          "template": {}
+        }
+      }
+    },
+    {
+      "id": "agent-transport",
+      "type": "Tool",
+      "position": { "x": 1130, "y": 600 },
+      "data": {
+        "type": "Tool",
+        "node": {
+          "display_name": "Agent 4 — Transport Advisor",
+          "description": "Flights · trains · buses · rideshares · local transport within destination",
+          "template": {}
+        }
+      }
+    },
+    {
+      "id": "agent-hotel",
+      "type": "Tool",
+      "position": { "x": 1130, "y": 710 },
+      "data": {
+        "type": "Tool",
+        "node": {
+          "display_name": "Agent 5 — Hotel Recommender",
+          "description": "3 tiers: budget / mid-range / luxury · local currency pricing · amenities · booking tips",
+          "template": {}
+        }
+      }
+    },
+    {
+      "id": "agent-weather",
+      "type": "Tool",
+      "position": { "x": 1400, "y": 50 },
+      "data": {
+        "type": "Tool",
+        "node": {
+          "display_name": "Agent 6 — Weather Advisory",
+          "description": "Forecast · safety rating · visa overview · health precautions · emergency contacts",
+          "template": {}
+        }
+      }
+    },
+    {
+      "id": "agent-localguide",
+      "type": "Tool",
+      "position": { "x": 1400, "y": 160 },
+      "data": {
+        "type": "Tool",
+        "node": {
+          "display_name": "Agent 7 — Local Guide",
+          "description": "Top 10 attractions · 5 hidden gems · cultural etiquette · local language phrases · markets",
+          "template": {}
+        }
+      }
+    },
+    {
+      "id": "agent-restaurant",
+      "type": "Tool",
+      "position": { "x": 1400, "y": 270 },
+      "data": {
+        "type": "Tool",
+        "node": {
+          "display_name": "Agent 8 — Restaurant Advisor",
+          "description": "Budget / mid / fine dining · street food · dietary requirements · local cuisine",
+          "template": {}
+        }
+      }
+    },
+    {
+      "id": "agent-packing",
+      "type": "Tool",
+      "position": { "x": 1400, "y": 380 },
+      "data": {
+        "type": "Tool",
+        "node": {
+          "display_name": "Agent 9 — Packing Checklist",
+          "description": "Documents · Clothing · Toiletries · Electronics · Health & Safety · destination-specific items",
+          "template": {}
+        }
+      }
+    },
+    {
+      "id": "agent-chat",
+      "type": "Tool",
+      "position": { "x": 860, "y": 560 },
+      "data": {
+        "type": "Tool",
+        "node": {
+          "display_name": "Agent 10 — Chat Assistant",
+          "description": "Conversational travel Q&A · Mistral multi-turn [INST] format · last 6 history exchanges · off-topic gate applied first",
+          "template": {}
+        }
+      }
+    },
+    {
+      "id": "aggregator",
+      "type": "PythonFunctionTool",
+      "position": { "x": 1400, "y": 490 },
+      "data": {
+        "type": "PythonFunctionTool",
+        "node": {
+          "display_name": "Result Aggregator",
+          "description": "as_completed() merges all agent results · _errors dict for failed agents · returns { itinerary, budget_plan, transportation, hotels, weather, local_guide, restaurants, packing }",
+          "template": {}
+        }
+      }
+    },
+    {
+      "id": "trip-store",
+      "type": "Memory",
+      "position": { "x": 1400, "y": 620 },
+      "data": {
+        "type": "Memory",
+        "node": {
+          "display_name": "Trip Store (In-Memory)",
+          "description": "_trip_store: dict[str, dict] · trip_id = TRIP-XXXXXXXX · stores details + results + saved/favorite flags · RAM only — no database",
+          "template": {
+            "session_id": {
+              "type": "str",
+              "display_name": "Trip ID"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "pdf-generator",
+      "type": "PythonFunctionTool",
+      "position": { "x": 1400, "y": 730 },
+      "data": {
+        "type": "PythonFunctionTool",
+        "node": {
+          "display_name": "PDF Generator",
+          "description": "generate_itinerary_pdf() · fpdf2 · TravelItineraryPDF · parchment style · 6 sections: Overview, Itinerary, Budget, Hotels, Transport, Packing",
+          "template": {}
+        }
+      }
+    },
+    {
+      "id": "chat-output",
+      "type": "ChatOutput",
+      "position": { "x": 1670, "y": 560 },
+      "data": {
+        "type": "ChatOutput",
+        "node": {
+          "display_name": "Chat Reply Output",
+          "description": "Returns travel answer to user chat interface",
+          "template": {}
+        }
+      }
+    },
+    {
+      "id": "json-output",
+      "type": "TextOutput",
+      "position": { "x": 1670, "y": 380 },
+      "data": {
+        "type": "TextOutput",
+        "node": {
+          "display_name": "JSON Trip Response",
+          "description": "{ success: true, trip_id, results: { itinerary, budget_plan, hotels, transportation, weather, local_guide, restaurants, packing } }",
+          "template": {}
+        }
+      }
+    }
+  ],
+  "edges": [
+    { "source": "user-input",       "target": "sanitizer",         "sourceHandle": "text", "targetHandle": "input" },
+    { "source": "chat-input",       "target": "sanitizer",         "sourceHandle": "text", "targetHandle": "input" },
+    { "source": "chat-input",       "target": "offtopic-guard",    "sourceHandle": "text", "targetHandle": "input" },
+    { "source": "sanitizer",        "target": "prompt-engine",     "sourceHandle": "output","targetHandle": "input" },
+    { "source": "offtopic-guard",   "target": "agent-chat",        "sourceHandle": "output","targetHandle": "input" },
+    { "source": "prompt-engine",    "target": "orchestrator",      "sourceHandle": "output","targetHandle": "input" },
+    { "source": "orchestrator",     "target": "agent-destination",  "sourceHandle": "output","targetHandle": "input" },
+    { "source": "orchestrator",     "target": "agent-itinerary",   "sourceHandle": "output","targetHandle": "input" },
+    { "source": "orchestrator",     "target": "agent-budget",      "sourceHandle": "output","targetHandle": "input" },
+    { "source": "orchestrator",     "target": "agent-transport",   "sourceHandle": "output","targetHandle": "input" },
+    { "source": "orchestrator",     "target": "agent-hotel",       "sourceHandle": "output","targetHandle": "input" },
+    { "source": "orchestrator",     "target": "agent-weather",     "sourceHandle": "output","targetHandle": "input" },
+    { "source": "orchestrator",     "target": "agent-localguide",  "sourceHandle": "output","targetHandle": "input" },
+    { "source": "orchestrator",     "target": "agent-restaurant",  "sourceHandle": "output","targetHandle": "input" },
+    { "source": "orchestrator",     "target": "agent-packing",     "sourceHandle": "output","targetHandle": "input" },
+    { "source": "agent-destination","target": "watsonx-llm",       "sourceHandle": "output","targetHandle": "input" },
+    { "source": "agent-itinerary",  "target": "watsonx-llm",       "sourceHandle": "output","targetHandle": "input" },
+    { "source": "agent-budget",     "target": "watsonx-llm",       "sourceHandle": "output","targetHandle": "input" },
+    { "source": "agent-transport",  "target": "watsonx-llm",       "sourceHandle": "output","targetHandle": "input" },
+    { "source": "agent-hotel",      "target": "watsonx-llm",       "sourceHandle": "output","targetHandle": "input" },
+    { "source": "agent-weather",    "target": "watsonx-llm",       "sourceHandle": "output","targetHandle": "input" },
+    { "source": "agent-localguide", "target": "watsonx-llm",       "sourceHandle": "output","targetHandle": "input" },
+    { "source": "agent-restaurant", "target": "watsonx-llm",       "sourceHandle": "output","targetHandle": "input" },
+    { "source": "agent-packing",    "target": "watsonx-llm",       "sourceHandle": "output","targetHandle": "input" },
+    { "source": "agent-chat",       "target": "watsonx-llm",       "sourceHandle": "output","targetHandle": "input" },
+    { "source": "watsonx-llm",      "target": "aggregator",        "sourceHandle": "output","targetHandle": "input" },
+    { "source": "aggregator",       "target": "trip-store",        "sourceHandle": "output","targetHandle": "input" },
+    { "source": "aggregator",       "target": "json-output",       "sourceHandle": "output","targetHandle": "input" },
+    { "source": "trip-store",       "target": "pdf-generator",     "sourceHandle": "output","targetHandle": "input" },
+    { "source": "watsonx-llm",      "target": "chat-output",       "sourceHandle": "output","targetHandle": "input" }
+  ]
+}
