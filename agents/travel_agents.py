@@ -138,7 +138,7 @@ class WatsonxClient:
             api_key = os.getenv("IBM_API_KEY", "")
             project_id = os.getenv("IBM_PROJECT_ID", "")
             url = os.getenv("IBM_URL", "https://us-south.ml.cloud.ibm.com")
-            model_id = os.getenv("IBM_MODEL_ID", "mistralai/mistral-small-3-1-24b-instruct-2503")
+            model_id = os.getenv("IBM_MODEL_ID", "meta-llama/llama-3-3-70b-instruct")
 
             if not api_key or not project_id:
                 raise EnvironmentError(
@@ -173,7 +173,18 @@ class WatsonxClient:
                 )
                 return response.strip() if isinstance(response, str) else str(response)
             except Exception as exc:
-                if "429" in str(exc) and attempt < 4:
+                exc_str = str(exc)
+                # Quota exhausted — no point retrying, raise immediately
+                if "token_quota_reached" in exc_str or (
+                    "403" in exc_str and "quota" in exc_str.lower()
+                ):
+                    logger.error("IBM Watsonx token quota exhausted: %s", exc)
+                    raise EnvironmentError(
+                        "IBM Watsonx token quota has been reached. "
+                        "Please upgrade your plan or wait for the quota to reset at "
+                        "cloud.ibm.com → Watsonx.ai → Usage."
+                    ) from exc
+                if "429" in exc_str and attempt < 4:
                     wait = 2 + (attempt * 3)   # 2s, 5s, 8s, 11s
                     logger.warning("Rate limited (429), retrying in %ds (attempt %d/5)…", wait, attempt + 1)
                     time.sleep(wait)
@@ -595,6 +606,9 @@ class TravelAgentOrchestrator:
                 try:
                     key, result = future.result()
                     results[key] = result
+                except EnvironmentError:
+                    # Quota / credentials error — abort immediately, no point running other agents
+                    raise
                 except Exception as exc:
                     key = futures[future]
                     logger.error("Agent '%s' failed: %s", key, exc, exc_info=True)

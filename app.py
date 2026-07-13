@@ -85,7 +85,7 @@ def health_check():
     return jsonify({
         "status": "ok",
         "timestamp": datetime.utcnow().isoformat(),
-        "model": os.getenv("IBM_MODEL_ID", "mistralai/mistral-small-3-1-24b-instruct-2503"),
+        "model": os.getenv("IBM_MODEL_ID", "meta-llama/llama-3-3-70b-instruct"),
         "version": "1.0.0",
     })
 
@@ -307,7 +307,7 @@ def export_pdf(trip_id: str):
             download_name=filename,
         )
     except Exception as exc:
-        logger.error("PDF export error: %s", exc)
+        logger.exception("PDF export error for trip %s: %s", trip_id, exc)
         return jsonify({"success": False, "error": "Failed to generate PDF."}), 500
 
 

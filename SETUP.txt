@@ -7,7 +7,7 @@ PREREQUISITES
 -------------
   - Python 3.9 or higher  (python --version to check)
   - pip  (comes with Python)
-  - An IBM Cloud account  (free tier works)
+  - An IBM Cloud account with Watsonx.ai access (free tier works)
   - Git  (to clone the repository)
 
 
@@ -15,7 +15,7 @@ PREREQUISITES
 STEP 1 — Clone the Repository
 ------------------------------------------------------------------------------
 
-  git clone <your-repo-url>
+  git clone https://github.com/<your-username>/Travel_Agent.git
   cd Travel_Agent
 
 
@@ -60,11 +60,13 @@ STEP 4 — Get Your IBM Watsonx.ai Credentials  (REQUIRED)
      3. Click "Manage" tab -> "General"
      4. Copy the "Project ID" shown on that page
 
-  C) IBM_URL  — pick the region closest to you:
+  C) IBM_URL  — MUST match the region where your Watsonx project was created:
      - US South : https://us-south.ml.cloud.ibm.com
      - EU DE    : https://eu-de.ml.cloud.ibm.com
      - EU GB    : https://eu-gb.ml.cloud.ibm.com
      - AP North : https://jp-tok.ml.cloud.ibm.com
+
+  NOTE: IBM_URL and your project must be in the SAME region or all calls will fail.
 
 
 ------------------------------------------------------------------------------
@@ -104,9 +106,18 @@ STEP 6 — Run the Application
 TROUBLESHOOTING
 ------------------------------------------------------------------------------
 
-  "Model is not supported"
-    -> Your IBM_URL may not match the region where your Watsonx project lives.
-       Make sure the URL and your project are in the same IBM Cloud region.
+  "token_quota_reached" (403 error)
+    -> Your IBM free-tier monthly token quota is exhausted.
+       Option 1: Wait for it to reset on the 1st of next month.
+       Option 2: Upgrade to Pay-As-You-Go at cloud.ibm.com -> Billing.
+       Option 3: Change IBM_MODEL_ID in .env to a different model and retry.
+
+  "Model is not supported" or model errors
+    -> Your IBM_URL region may not match where your Watsonx project lives.
+       Also try changing IBM_MODEL_ID in .env to one of these alternatives:
+         meta-llama/llama-3-3-70b-instruct          (recommended)
+         meta-llama/llama-4-maverick-17b-128e-instruct-fp8
+         mistralai/mistral-small-3-1-24b-instruct-2503
 
   "IBM_API_KEY and IBM_PROJECT_ID must be set"
     -> The .env file was not found or the values are still blank.
@@ -128,12 +139,14 @@ SUPPORTED AI MODELS (IBM Watsonx.ai)
 ------------------------------------------------------------------------------
 
   The app is pre-configured to use:
-    mistralai/mistral-small-3-1-24b-instruct-2503
+    meta-llama/llama-3-3-70b-instruct   ← recommended, best quality
 
-  Other supported models you can set in IBM_MODEL_ID:
-    - meta-llama/llama-3-3-70b-instruct
+  Other models you can set via IBM_MODEL_ID in .env:
     - meta-llama/llama-4-maverick-17b-128e-instruct-fp8
-    - mistralai/mistral-medium-2505
+    - mistralai/mistral-small-3-1-24b-instruct-2503
     - meta-llama/llama-3-1-70b-gptq
+
+  Each IBM account has its own free-tier token quota per model.
+  If one model hits the quota limit, try switching to another.
 
 ==============================================================================

@@ -44,7 +44,7 @@
 
 ### 1. Clone the Repository
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/<your-username>/Travel_Agent.git
 cd Travel_Agent
 ```
 
@@ -82,6 +82,8 @@ IBM_URL=<your regional endpoint, e.g. https://eu-de.ml.cloud.ibm.com>
 ```
 
 Everything else already has working defaults — no changes needed.
+
+> ⚠️ **IBM_URL must match the region your Watsonx.ai project was created in.** Mismatched regions cause all API calls to fail.
 
 ### 5. Run the Application
 ```bash
@@ -167,6 +169,23 @@ AGENT_INSTRUCTIONS = {
 
 ---
 
+## ⚠️ Token Quota Note
+
+IBM Watsonx.ai free tier has a **monthly token quota per model**. If you see a `token_quota_reached` error:
+
+1. Try switching `IBM_MODEL_ID` in `.env` to a different model — each model has its own separate quota
+2. If all models are exhausted, wait for the quota to reset on the **1st of the month**
+3. Or upgrade to Pay-As-You-Go at [cloud.ibm.com](https://cloud.ibm.com) → Billing
+
+**Recommended models to try (in order):**
+```
+meta-llama/llama-3-3-70b-instruct              ← default, best quality
+meta-llama/llama-4-maverick-17b-128e-instruct-fp8
+mistralai/mistral-small-3-1-24b-instruct-2503
+```
+
+---
+
 ## 🌐 REST API Reference
 
 | Method | Endpoint | Description |
@@ -243,7 +262,7 @@ FLASK_DEBUG=False
 
 | Layer | Technology |
 |---|---|
-| AI Engine | IBM Watsonx.ai (Mistral Small 3.1 24B) |
+| AI Engine | IBM Watsonx.ai (Llama 3.3 70B / configurable) |
 | Backend | Python 3.9+ / Flask 3.0 |
 | PDF Export | fpdf2 |
 | Frontend | Bootstrap 5.3 + Custom CSS |
